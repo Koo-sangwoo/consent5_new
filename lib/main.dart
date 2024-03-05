@@ -24,6 +24,6 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         // home: const LoginPage());
-        home: const MainPage());
+        home: const LoginPage());
   }
 }

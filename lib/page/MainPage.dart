@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:consent5/getx_controller/patient_detail_controller.dart';
 import 'package:consent5/getx_controller/visible_controller.dart';
 import 'package:consent5/page/I/SearchControl.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,7 @@ class _MainPageState extends State<MainPage> {
   final bool _isClickedOutpatient = false;
   final bool _isClickedEmergency = false;
   String _clickedButton = '';
+  late PatientDetailController _patientDetailController;
 
   @override
   void initState() {
@@ -29,6 +31,7 @@ class _MainPageState extends State<MainPage> {
     setState(() {
       _clickedButton = 'Inpatient';
     });
+    _patientDetailController = Get.find();
   }
 
   // page_I 메소드 정의
@@ -39,6 +42,8 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    Map<dynamic, dynamic> userInfo = _patientDetailController.patientDetail.value['params'];
+    print('userInfo 변수값 : ${userInfo.toString()}');
     return GetMaterialApp(
       home: OrientationBuilder(builder: (context, orientation) {
         bool isVerticalMode = orientation == Orientation.portrait;
@@ -142,8 +147,8 @@ class _MainPageState extends State<MainPage> {
                           const SizedBox(
                             width: 10,
                           ),
-                          const Text(
-                            "라이언 112233(OS)",
+                          Text(
+                            "${userInfo['UserName']}(${userInfo['UserDeptNum']})",//"라이언 112233(OS)"
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 12,

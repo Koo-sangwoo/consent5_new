@@ -129,8 +129,9 @@ class _WriteConsentWidgetState extends State<WriteConsentWidget> with WidgetsBin
                                   builder: (context, values, child) {
                                     return InkWell(
                                       onTap: () {
-                                        print(
-                                            '선택한 동의서 Rid : ${data[index]['ConsentMstRid']} / 선택한 동의서 저장타입 : ${data[index]['ConsentState']}');
+                                        // print(
+                                        //     '선택한 동의서 Rid : ${data[index]['ConsentMstRid']} / 선택한 동의서 저장타입 : ${data[index]['ConsentState']}');
+                                        print(data[index].toString());
                                         String consentType = 'temp';
                                         String korConsentType = '';
                                         // String formNames = data[index]['FormName'];
@@ -172,8 +173,8 @@ class _WriteConsentWidgetState extends State<WriteConsentWidget> with WidgetsBin
                                             builder: (BuildContext context) {
                                               return AlertDialog(
                                                 title: Text(
-                                                    "${korConsentType}서식 열기"),
-                                                content: Text(' 서식을 열겠습니까?'),
+                                                    "${korConsentType} 서식 열기"),
+                                                content: Text('${data[index]['ConsentName']} 서식을 열겠습니까?'),
                                                 actions: [
                                                   ElevatedButton(
                                                       onPressed: () {

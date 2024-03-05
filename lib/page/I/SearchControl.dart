@@ -57,13 +57,15 @@ class _PatientIWidgetState extends State<PatientIWidget> {
       Get.put(PatientSearchValueController());
 
   final PatientDetailController _patientDetailController =
-      Get.put(PatientDetailController());
+      Get.find();
 
   // 동의서 검색 라디오 타입 변수
   int consentSearchType = 1;
 
   @override
   Widget build(BuildContext context) {
+    print('로그인한 유저 정보 : ${_patientDetailController.patientDetail.value}');
+
     if (dateController.text == "") {
       dateController.text = getToday();
     }
@@ -289,7 +291,7 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderSide:
-                          BorderSide(color: Colors.black.withOpacity(0.5)),
+                          BorderSide(color: Colors.grey.withOpacity(0.5)),
                     ),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 10),
                   ),
@@ -325,7 +327,7 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderSide:
-                          BorderSide(color: Colors.black.withOpacity(0.5)),
+                          BorderSide(color: Colors.grey.withOpacity(0.5)),
                     ),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 10),
                   ),
@@ -363,7 +365,7 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderSide:
-                          BorderSide(color: Colors.black.withOpacity(0.5)),
+                          BorderSide(color: Colors.grey.withOpacity(0.5)),
                     ),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 10),
                   ),
@@ -475,7 +477,7 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderSide:
-                          BorderSide(color: Colors.black.withOpacity(0.5)),
+                          BorderSide(color: Colors.grey.withOpacity(0.5)),
                     ),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 10),
                   ),
@@ -513,7 +515,7 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderSide:
-                          BorderSide(color: Colors.black.withOpacity(0.5)),
+                          BorderSide(color: Colors.grey.withOpacity(0.5)),
                     ),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 10),
                   ),
@@ -596,7 +598,7 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                   // 포커싱 잡혔을때 노란색은 쫌;;
                   focusedBorder: OutlineInputBorder(
                     borderSide:
-                        BorderSide(color: Colors.black.withOpacity(0.5)),
+                        BorderSide(color: Colors.grey.withOpacity(0.5)),
                   ),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 10),
                   suffixIcon: Icon(Icons.calendar_today),

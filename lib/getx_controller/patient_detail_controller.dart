@@ -26,7 +26,8 @@ class PatientDetailController extends GetxController {
     }
     if (userInfo != null && userInfo.length != 0) {
       print('아직은 타면안돼 아직은..');
-      patientDetail.update('params', (value) => value);
+      print('유저정보 컨트롤러도입값 : ${userInfo.toString()}');
+      patientDetail.update('params', (value) => value = userInfo);
     }
     print('detail값 : ${patientDetail['detail'].toString()}');
     print('user값 : ${patientDetail['params'].toString()}');

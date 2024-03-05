@@ -251,6 +251,7 @@ public class EFormViewer {
 
                             // 녹취 파일 처리
                             String audiosPath = audioFileUpload(event.getAudioPath());
+                            Log.i(TAG,"녹취파일 저장경로 @@@@@@@@@@@@@@@ : " + event.getAudioPath());
                             if (!event.getAudioPath().isEmpty()) {
                                 if (audiosPath.equals("")) {
                                     audioUploadResult = false;
@@ -311,6 +312,9 @@ public class EFormViewer {
 
                         // 녹취 파일
                         String audiosPath = audioFileUpload(event.getAudioPath());
+                        Log.i(TAG,"녹취파일 저장경로 @@@@@@@@@@@@@@@ : " + event.getAudioPath());
+                        Log.i(TAG,"녹취파일 저장경로 @@@@@@@@@@@@@@@ : " + event.getAudioPath());
+
                         if (!event.getAudioPath().isEmpty()) {
                             if (audiosPath.equals("")) {
                                 audioUploadResult = false;
@@ -700,6 +704,7 @@ public class EFormViewer {
     // FOS에 저장된 녹취 파일 추가
     public String makeFosRecordFiles() {
         String recordFilePath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + "/CLIPe-Form/CONSENT/RECORD/";
+        Log.i(TAG, "녹취파일 불러오는 경로 : " + recordFilePath);
         File recordFolder = new File(recordFilePath);
 
         String parameters = "";
