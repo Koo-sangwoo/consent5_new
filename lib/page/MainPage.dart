@@ -45,6 +45,7 @@ class _MainPageState extends State<MainPage> {
         return DefaultTabController(
           length: categories.length, // 탭의 개수
           child: Scaffold(
+            backgroundColor: Color.fromRGBO(239, 243, 250, 1),
             resizeToAvoidBottomInset:
                 false, // 키보드가 올라올 때 바텀의 요소가 밀리는 것을 방지 by sangU02 2024/01/18
             // drawer: Drawer(
@@ -87,14 +88,14 @@ class _MainPageState extends State<MainPage> {
                   Expanded(
                     // 탭바가 여유 공간을 모두 채우도록 확장
                     child: TabBar(
-                      labelColor: Colors.yellow,
+                      labelColor: Colors.white,
                       padding: isVerticalMode
                           ? null
                           : const EdgeInsets.symmetric(horizontal: 150.0),
                       // 기기에 따라 조정 by sangU02 2023/01/12
                       labelStyle: const TextStyle(
                         color: Colors.white,
-                        fontSize: 20,
+                        fontSize: 12,
                       ),
                       indicatorSize: TabBarIndicatorSize.label,
                       unselectedLabelStyle: isVerticalMode
@@ -111,9 +112,13 @@ class _MainPageState extends State<MainPage> {
                       ),
 
                       //선택안되었을때 색깔
-                      unselectedLabelColor: Colors.grey,
-                      indicatorColor: Colors.pink.shade100,
-
+                      unselectedLabelColor: Colors.white,
+                      // indicatorColor: Colors.pink.shade100,
+                      indicator: BoxDecoration(
+                        color: Color.fromRGBO(115, 140, 243, 1),
+                        borderRadius: BorderRadius.circular(12)
+                      ),
+                      indicatorPadding: EdgeInsets.fromLTRB(-25, 5, -25, 5),
                       /// 탭바 클릭할 때 나오는 splash effect의 radius
                       splashBorderRadius: BorderRadius.circular(20),
                       tabs: categories

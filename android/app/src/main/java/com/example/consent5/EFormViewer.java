@@ -546,6 +546,7 @@ public class EFormViewer {
                 paramPatientCode = patientDetail.getString("PatientCode");
                 paramPatientName = patientDetail.getString("PatientName");
 
+                Log.i(TAG, "들어온 타입 : " + type);
                 Log.i(TAG, "path : 퓨패패패" + path);
                 Log.i(TAG, "로그인 사용자 ID :" + params.getString("userId"));
                 Log.i(TAG, "선택한 환자코드 :" + patientDetail.getString("PatientCode"));
@@ -925,14 +926,14 @@ public class EFormViewer {
             // 저장시 넘길 환자 데이터에 대한 변수를 전역 변수로 선언한 JsonObject detail에서 찾아 세팅한다.
             String patientCode = detail.getString("PatientCode");
             String patientName = detail.getString("PatientName");
-            Log.i(TAG,"@@@@@@뷰어 저장시 로그 \n MethodName : " + requestOptions.getString("methodName") + "\n 환자 코드 : " + patientCode + "\n params.toString = " + params.toString());
+            Log.i(TAG, "@@@@@@뷰어 저장시 로그 \n MethodName : " + requestOptions.getString("methodName") + "\n 환자 코드 : " + patientCode + "\n params.toString = " + params.toString());
             // 2024/02/27 by sangU02
             // 동의서 저장시 서버에 넘기는 파라미터에 환자번호를 추가해서 보낸다.
             // 02/28에 테스트해볼것.
-            params.put("patientCode",patientCode);
-            params.put("userId","01");
+            params.put("patientCode", patientCode);
+            params.put("userId", "01");
             params.put("patientName", patientName);
-            params.put("deviceType","AND");
+            params.put("deviceType", "AND");
             if (paramsNullCheck(requestOptions.getString("methodName"), params)) {
                 // by sangU02 2024/02/27 저장시 해당 함수를 통해 서버에 저장요청함
                 saveRespone = new AsyncTaskForHttp(context, "")
@@ -1081,7 +1082,7 @@ public class EFormViewer {
         String patientCode = "12345678";
         // by sangU02 2024/02/28
         // 처음 patientCode.subString이 /하나가 붙어서 나오므로, 처음 /를 삭제함.
-        path = patientCode.substring(0, 3) +"/"+ patientCode.substring(4, 4) + "/" + patientCode + "/";    ///박승찬 환자번호 수정
+        path = patientCode.substring(0, 3) + "/" + patientCode.substring(4, 4) + "/" + patientCode + "/";    ///박승찬 환자번호 수정
 
 
         return path;
@@ -1141,8 +1142,8 @@ public class EFormViewer {
         boolean result = false;
         String uploadResult = "";
         try {
-            uploadResult = new AsyncTaskForUpload(context,"업로드 중 ...")
-                            .execute("UpLoad.aspx",uploadPath,files).get();
+            uploadResult = new AsyncTaskForUpload(context, "업로드 중 ...")
+                    .execute("UpLoad.aspx", uploadPath, files).get();
 
             Log.i(TAG, "upload Result : " + uploadResult);
             JSONObject jsonResult = new JSONObject(uploadResult);

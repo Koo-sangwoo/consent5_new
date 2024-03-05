@@ -100,25 +100,25 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
     const platform = MethodChannel('com.example.consent5/kmiPlugin');
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-        margin: const EdgeInsets.fromLTRB(5, 0, 0, 5),
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+        margin: const EdgeInsets.fromLTRB(0, 0, 0, 0), // 기존 left margin = 5
         // 하단 마진 30으로 설정
         alignment: Alignment.centerLeft,
         decoration: BoxDecoration(
           color: Colors.white,
           border: Border.all(
-            color: Colors.grey,
-            width: 1.0,
+            color: Color.fromRGBO(233, 233, 233, 1),
+            width: 0.3,
           ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Container(
-              margin: const EdgeInsets.fromLTRB(15, 10, 0, 0),
+            Container( // 검색창 및 라디오박스
+              margin: const EdgeInsets.fromLTRB(15, 20, 0, 0),
               child: const Text("동의서 검색",
                   style:
-                      TextStyle(fontSize: 20.0, fontWeight: FontWeight.w700)),
+                      TextStyle(fontSize: 17.0, fontWeight: FontWeight.w600)),
             ),
             consentSearchTypeWidget(consentSearchType, (int newValue) {
               setState(() {
@@ -126,7 +126,7 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
               });
             }),
             Padding(
-              padding: const EdgeInsets.fromLTRB(10, 0, 20, 0),
+              padding: const EdgeInsets.fromLTRB(15, 0, 20, 0),
               child: Row(
                 children: [
                   Expanded(
@@ -151,7 +151,7 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                               borderRadius:
                                   BorderRadius.circular(5.0), // 경계선의 둥근 모서리 반경
                             ),
-                            hintText: '검색',
+                            // hintText: '검색',
                             hintStyle: TextStyle(fontSize: 12.0),
                             // 힌트 텍스트의 글자 크기
                             filled: true,
@@ -223,7 +223,8 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                 ],
               ),
             ),
-            const Divider(thickness: 2, height: 20, color: Colors.grey),
+            const Divider(thickness: 0.5, height: 20, color : Color.fromRGBO(208, 214, 217, 1),
+    ), // 차선책 Color.fromRGBO(208, 214, 217, 1)
             Expanded(
                 child: widget.isVisible
                     ? FutureBuilder(
@@ -315,13 +316,38 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                                         print(
                                             "JSON 변형값 consents : ${jsonEncode(consents)}, params : ${jsonEncode(params)}");
 
+                                        String formNames = '';
+                                        if(selectedData.length == 0){
+                                          formNames = data[index]['FormName'];
+                                        }else{
+                                          for(Map<String,dynamic> formName in selectedData){
+                                            formNames += formNames == '' ? formName['FormName'] : ', ${formName['FormName']}';
+                                          }
+                                        }
+
                                         // 신규 동의서 열기 / 파라미터 전달
-                                        platform.invokeMethod('openEForm', {
-                                          'type': 'new',
-                                          'consents': jsonEncode(consents),
-                                          'params': jsonEncode(params),
-                                          // 'op': 'someOperation',
-                                        });
+                                        showDialog(context: context, barrierDismissible: true,
+                                            builder: (BuildContext context){
+                                              return AlertDialog(
+                                                title: Text("서식 오픈 여부"),
+                                                content: Text('${formNames} 서식을 열겠습니까?'),
+                                                actions: [
+                                                  ElevatedButton(onPressed: (){
+                                                    Navigator.of(context).pop();
+                                                    platform.invokeMethod('openEForm', {
+                                                      'type': 'new',
+                                                      'consents': jsonEncode(consents),
+                                                      'params': jsonEncode(params),
+                                                      // 'op': 'someOperation',
+                                                    });
+                                                  }, child: Text('확인'))
+                                                  ,
+                                                  ElevatedButton(onPressed: (){
+                                                    Navigator.of(context).pop();
+                                                  },child: Text('취소'))
+                                                ],
+                                              );
+                                            });
                                         //체크박스 갯수에 따라서 분기 처리
                                         if (selectedData.length <= 1) {
                                           print(
@@ -331,101 +357,107 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                                               '체크박스 체크된 데이터 --- > ${selectedData.length}');
                                         }
                                       },
-                                      child: Row(
-                                        children: <Widget>[
-                                          Checkbox(
-                                            value: values[index],
-                                            onChanged: (bool? newValue) {
-                                              var newValues =
-                                                  List<bool>.from(values);
-                                              newValues[index] =
-                                                  newValue ?? false;
-                                              checkboxValuesNotifier.value =
-                                                  newValues;
+                                      child: Container(
+                                        margin: EdgeInsets.fromLTRB(15, 0, 0, 0),
+                                        child: Row(
+                                          children: <Widget>[
+                                            Text('${index + 1}.'), // sangu123
+                                            Checkbox(
+                                              value: values[index],
+                                              visualDensity: VisualDensity(vertical: 1, horizontal: -4), // 크기 조절
+                                              side: BorderSide(width: 1, color: Colors.grey.shade400),
+                                              onChanged: (bool? newValue) {
+                                                var newValues =
+                                                    List<bool>.from(values);
+                                                newValues[index] =
+                                                    newValue ?? false;
+                                                checkboxValuesNotifier.value =
+                                                    newValues;
 
-                                              Map<String, dynamic> item =
-                                                  data[index];
-                                              if (newValue == true) {
-                                                // 체크박스가 선택되었을 때, 리스트에 해당 데이터가 없으면 추가
-                                                if (!selectedData.any(
-                                                    (element) =>
-                                                        element['FormName'] ==
-                                                        item['FormName'])) {
-                                                  selectedData.add(item);
+                                                Map<String, dynamic> item =
+                                                    data[index];
+                                                if (newValue == true) {
+                                                  // 체크박스가 선택되었을 때, 리스트에 해당 데이터가 없으면 추가
+                                                  if (!selectedData.any(
+                                                      (element) =>
+                                                          element['FormName'] ==
+                                                          item['FormName'])) {
+                                                    selectedData.add(item);
+                                                    print(
+                                                        '데이터 추가 :: ${selectedData.toString()}');
+                                                  }
+                                                } else {
+                                                  // 체크박스가 해제되었을 때, 리스트에서 해당 데이터 제거
+                                                  selectedData.removeWhere(
+                                                      (element) =>
+                                                          element['FormName'] ==
+                                                          item['FormName']);
                                                   print(
-                                                      '데이터 추가 :: ${selectedData.toString()}');
+                                                      '데이터 삭제 :: ${selectedData.toString()}');
                                                 }
-                                              } else {
-                                                // 체크박스가 해제되었을 때, 리스트에서 해당 데이터 제거
-                                                selectedData.removeWhere(
-                                                    (element) =>
-                                                        element['FormName'] ==
-                                                        item['FormName']);
-                                                print(
-                                                    '데이터 삭제 :: ${selectedData.toString()}');
-                                              }
-                                            },
-                                          ),
-                                          Expanded(
-                                            child: Row(
-                                              children: [
-                                                Text(
-                                                  data[index]['FormName'],
-                                                  style: const TextStyle(
-                                                      fontSize: 12),
-                                                ),
-                                                Spacer(),
-                                                IconButton(
-                                                    padding: EdgeInsets.only(
-                                                        right: 30),
-                                                    onPressed: () {
-                                                      String formId =
-                                                          data[index]['FormId']
-                                                              .toString();
-                                                      print("@@아이콘 버튼 클릭");
-                                                      print(
-                                                          "클릭한 서식 id : ${data[index]['FormId']}");
-                                                      if (data[index]
-                                                              ['UseYN'] ==
-                                                          'Y') {
-                                                        print('즐겨찾기 삭제 실행');
-                                                        makeRequest_deleteBookmark(
-                                                            methodName:
-                                                                'DeleteBookMarkConsent',
-                                                            userId: '01',
-                                                            userPw: '1234',
-                                                            url:
-                                                                'http://59.11.2.207:50089/ConsentSvc.aspx',
-                                                            formId: formId);
-                                                      } else {
-                                                        print('즐겨찾기 추가 실행');
-                                                        makeRequest_insertBookmark(
-                                                            methodName:
-                                                                'InsertBookMarkConsent',
-                                                            userId: '01',
-                                                            userPw: '1234',
-                                                            url:
-                                                                'http://59.11.2.207:50089/ConsentSvc.aspx',
-                                                            formId: formId);
-                                                      }
-                                                      // 즐겨찾기 추가 or 삭제 후에는 라이프싸이클을 다시 돌린다.
-                                                      setState(() {});
-                                                    },
-                                                    // UseYN값에 따라 아이콘 모양 결정
-                                                    icon: (data[index]
-                                                                ['UseYN'] ==
-                                                            'Y')
-                                                        ? Icon(
-                                                            Icons.star,
-                                                            color:
-                                                                Colors.yellow,
-                                                          )
-                                                        : Icon(
-                                                            Icons.star_border))
-                                              ],
+                                              },
                                             ),
-                                          ),
-                                        ],
+                                            Expanded(
+                                              child: Row(
+                                                children: [
+                                                  Text(
+                                                    data[index]['FormName'],
+                                                    style: const TextStyle(
+                                                        fontSize: 12),
+                                                  ),
+                                                  Spacer(),
+                                                  IconButton(
+                                                      padding: EdgeInsets.only(
+                                                          right: 30),
+                                                      onPressed: () {
+                                                        String formId =
+                                                            data[index]['FormId']
+                                                                .toString();
+                                                        print("@@아이콘 버튼 클릭");
+                                                        print(
+                                                            "클릭한 서식 id : ${data[index]['FormId']}");
+                                                        if (data[index]
+                                                                ['UseYN'] ==
+                                                            'Y') {
+                                                          print('즐겨찾기 삭제 실행');
+                                                          makeRequest_deleteBookmark(
+                                                              methodName:
+                                                                  'DeleteBookMarkConsent',
+                                                              userId: '01',
+                                                              userPw: '1234',
+                                                              url:
+                                                                  'http://59.11.2.207:50089/ConsentSvc.aspx',
+                                                              formId: formId);
+                                                        } else {
+                                                          print('즐겨찾기 추가 실행');
+                                                          makeRequest_insertBookmark(
+                                                              methodName:
+                                                                  'InsertBookMarkConsent',
+                                                              userId: '01',
+                                                              userPw: '1234',
+                                                              url:
+                                                                  'http://59.11.2.207:50089/ConsentSvc.aspx',
+                                                              formId: formId);
+                                                        }
+                                                        // 즐겨찾기 추가 or 삭제 후에는 라이프싸이클을 다시 돌린다.
+                                                        setState(() {});
+                                                      },
+                                                      // UseYN값에 따라 아이콘 모양 결정
+                                                      icon: (data[index]
+                                                                  ['UseYN'] ==
+                                                              'Y')
+                                                          ? Icon(
+                                                              Icons.star,
+                                                              color:
+                                                                  Colors.yellow,
+                                                            )
+                                                          : Icon(
+                                                              Icons.star_border))
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     );
                                   },
@@ -433,9 +465,10 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                               },
                               separatorBuilder: (context, index) =>
                                   const Divider(
-                                color: Colors.grey,
-                                thickness: 1, // 두께를 1로 설정
+                                color: Color.fromRGBO(233, 233, 233, 1),
+                                thickness: 0.5, // 두께를 1로 설정
                                 height: 0, // 높이를 줄임
+
                               ),
                             );
                           } else {
@@ -467,13 +500,12 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
     return Expanded(
         child: Container(
       width: MediaQuery.of(context).size.width - 10,
-      padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
       margin: const EdgeInsets.fromLTRB(5, 10, 5, 10),
       alignment: Alignment.center,
       decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(color: Colors.grey, width: 1.0)),
+          borderRadius: BorderRadius.circular(32.0),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -503,7 +535,6 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                             borderRadius:
                                 BorderRadius.circular(5.0), // 경계선의 둥근 모서리 반경
                           ),
-                          hintText: '검색',
                           hintStyle: TextStyle(fontSize: 12.0),
                           // 힌트 텍스트의 글자 크기
                           filled: true,
@@ -575,7 +606,7 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
               ],
             ),
           ),
-          const Divider(thickness: 2, height: 20, color: Colors.grey),
+          const Divider(thickness: 0.5 , height: 20,color: Color.fromRGBO(208, 214, 217, 1)),
           Expanded(
               child: widget.isVisible
                   ? FutureBuilder(
@@ -646,6 +677,9 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                                                 data['FormGuid'].toString(),
                                             'FormName':
                                                 data['FormName'].toString(),
+                                            'ConsentMstRid': data[index]
+                                            ['ConsentMstRid']
+                                                .toString(),
                                           };
                                           consents.add(consentMap);
                                         });
@@ -657,16 +691,42 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                                           _patientDetailController
                                               .patientDetail.value;
 
+                                      String formNames = '';
+                                      if(selectedData.length == 0){
+                                        formNames = data[index]['FormName'];
+                                      }else{
+                                        for(Map<String,dynamic> formName in selectedData){
+                                          formNames += formName['FormName'];
+                                        }
+                                      }
                                       print(
                                           "JSON 변형값 consents : ${jsonEncode(consents)}, params : ${jsonEncode(params)}");
 
-                                      // 신규 동의서 열기 / 파라미터 전달
-                                      platform.invokeMethod('openEForm', {
-                                        'type': 'new',
-                                        'consents': jsonEncode(consents),
-                                        'params': jsonEncode(params),
-                                        // 'op': 'someOperation',
+                                      // 서식 오픈 여부를 결정하는 alert 창
+                                      showDialog(context: context, barrierDismissible: true,
+                                          builder: (BuildContext context){
+                                        return AlertDialog(
+                                          title: Text("서식 오픈 여부"),
+                                          content: Text('${formNames} 서식을 열겠습니까?'),
+                                          actions: [
+                                            ElevatedButton(onPressed: (){
+                                              Navigator.of(context).pop();
+                                              platform.invokeMethod('openEForm', {
+                                                'type': 'new',
+                                                'consents': jsonEncode(consents),
+                                                'params': jsonEncode(params),
+                                                // 'op': 'someOperation',
+                                              });
+                                            }, child: Text('확인'))
+                                            ,
+                                            ElevatedButton(onPressed: (){
+                                              Navigator.of(context).pop();
+                                            },child: Text('취소'))
+                                          ],
+                                        );
                                       });
+                                      // 신규 동의서 열기 / 파라미터 전달
+
                                       //체크박스 갯수에 따라서 분기 처리
                                       if (selectedData.length <= 1) {
                                         print(
@@ -676,70 +736,78 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                                             '체크박스 체크된 데이터 --- > ${selectedData.length}');
                                       }
                                     },
-                                    child: Row(
-                                      children: <Widget>[
-                                        Checkbox(
-                                          value: values[index],
-                                          onChanged: (bool? newValue) {
-                                            var newValues =
-                                                List<bool>.from(values);
-                                            newValues[index] =
-                                                newValue ?? false;
-                                            checkboxValuesNotifier.value =
-                                                newValues;
+                                    child: Container(
+                                      margin: EdgeInsets.fromLTRB(15, 0, 0, 0),
+                                      child: Row(
+                                        children: <Widget>[
+                                          Text('${index + 1}.'), //sangu123
+                                          Checkbox(
+                                            value: values[index],
+                                            visualDensity: VisualDensity(vertical: 1, horizontal: -4), // 크기 조절
+                                            side: BorderSide(width: 1, color: Colors.grey.shade400),
+                                            onChanged: (bool? newValue) {
+                                              var newValues =
+                                                  List<bool>.from(values);
+                                              newValues[index] =
+                                                  newValue ?? false;
+                                              checkboxValuesNotifier.value =
+                                                  newValues;
 
-                                            Map<String, dynamic> item =
-                                                data[index];
-                                            if (newValue == true) {
-                                              // 체크박스가 선택되었을 때, 리스트에 해당 데이터가 없으면 추가
-                                              if (!selectedData.any((element) =>
-                                                  element['FormName'] ==
-                                                  item['FormName'])) {
-                                                selectedData.add(item);
+                                              Map<String, dynamic> item =
+                                                  data[index];
+                                              if (newValue == true) {
+                                                // 체크박스가 선택되었을 때, 리스트에 해당 데이터가 없으면 추가
+                                                if (!selectedData.any((element) =>
+                                                    element['FormName'] ==
+                                                    item['FormName'])) {
+                                                  selectedData.add(item);
+                                                }
+                                              } else {
+                                                // 체크박스가 해제되었을 때, 리스트에서 해당 데이터 제거
+                                                selectedData.removeWhere(
+                                                    (element) =>
+                                                        element['FormName'] ==
+                                                        item['FormName']);
                                               }
-                                            } else {
-                                              // 체크박스가 해제되었을 때, 리스트에서 해당 데이터 제거
-                                              selectedData.removeWhere(
-                                                  (element) =>
-                                                      element['FormName'] ==
-                                                      item['FormName']);
-                                            }
-                                          },
-                                        ),
-                                        Expanded(
-                                          child: Row(
-                                            children: [
-                                              Text(
-                                                data[index]['FormName'],
-                                                style: const TextStyle(
-                                                    fontSize: 12),
-                                              ),
-                                              Spacer(),
-                                              IconButton(
-                                                  padding: EdgeInsets.only(
-                                                      right: 30),
-                                                  onPressed: () {
-                                                    // print("@@아이콘 버튼 클릭");
-                                                  },
-                                                  icon: Icon(
-                                                    Icons.star,
-                                                    color: (data[index]
-                                                                ['UseYN'] ==
-                                                            'Y')
-                                                        ? Colors.yellow
-                                                        : Colors.white,
-                                                  ))
-                                            ],
+                                            },
                                           ),
-                                        ),
-                                      ],
+                                          Expanded(
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                  data[index]['FormName'],
+                                                  style: const TextStyle(
+                                                      fontSize: 12),
+                                                ),
+                                                Spacer(),
+                                                IconButton(
+                                                    padding: EdgeInsets.only(
+                                                        right: 30),
+                                                    onPressed: () {
+                                                      // print("@@아이콘 버튼 클릭");
+                                                    },
+                                                    icon: (data[index]
+                                                    ['UseYN'] ==
+                                                        'Y')
+                                                        ? Icon(
+                                                      Icons.star,
+                                                      color:
+                                                      Colors.yellow,
+                                                    )
+                                                        : Icon(
+                                                        Icons.star_border))
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   );
                                 },
                               );
                             },
                             separatorBuilder: (context, index) => const Divider(
-                              color: Colors.grey,
+                              color: Color.fromRGBO(208, 214, 217, 1),
                               thickness: 1, // 두께를 1로 설정
                               height: 0, // 높이를 줄임
                             ),
@@ -802,21 +870,24 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
   }
 
   Widget consentSearchTypeWidget(int groupValue, Function(int) onChanged) {
+
     return Row(
       children: <Widget>[
         InkWell(
           onTap: () => onChanged(1),
           child: Padding(
-            padding: EdgeInsets.all(5),
+            padding: EdgeInsets.all(10),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Radio<int>(
                   value: 1,
+                  visualDensity: VisualDensity(vertical: -4, horizontal: -4), // 크기 조절
                   groupValue: groupValue,
                   onChanged: (int? value) => onChanged(value!),
+                  activeColor: groupValue == 1 ? Color.fromRGBO(115, 140, 241, 1) : Color.fromRGBO(177, 177, 177, 1),
                 ),
-                Text("전체"),
+                Text("전체",style: TextStyle(color:  groupValue == 1 ? Color.fromRGBO(115, 140, 241, 1) : null),),
               ],
             ),
           ),
@@ -830,10 +901,12 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
               children: <Widget>[
                 Radio<int>(
                   value: 2,
+                  visualDensity: VisualDensity(vertical: 1, horizontal: -4), // 크기 조절 ** 라디오나 체크박스의 마진등을 조절시 사용
                   groupValue: groupValue,
                   onChanged: (int? value) => onChanged(value!),
+                  activeColor: Color.fromRGBO(115, 140, 241, 1),
                 ),
-                Text("세트동의서"),
+                Text("세트동의서",style: TextStyle(color:  groupValue == 2 ? Color.fromRGBO(115, 140, 241, 1) : null),),
               ],
             ),
           ),
@@ -847,10 +920,12 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
               children: <Widget>[
                 Radio<int>(
                   value: 3,
+                  visualDensity: VisualDensity(vertical: 1, horizontal: -4), // 크기 조절
                   groupValue: groupValue,
                   onChanged: (int? value) => onChanged(value!),
+                  activeColor: groupValue == 3 ? Color.fromRGBO(115, 140, 241, 1) : Color.fromRGBO(177, 177, 177, 1),
                 ),
-                Text("즐겨찾기"),
+                Text("즐겨찾기",style: TextStyle(color:  groupValue == 3 ? Color.fromRGBO(115, 140, 241, 1) : null),),
               ],
             ),
           ),

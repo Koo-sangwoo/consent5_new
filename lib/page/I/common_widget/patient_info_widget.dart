@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:consent5/WebService/httpService.dart';
 import 'package:consent5/getx_controller/patient_detail_controller.dart';
@@ -126,22 +127,23 @@ class _PatientInfoWidgetState extends State<PatientInfoWidget> {
       dateText = '검사일';
       alertText = '검사명';
     }
-
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 5, 20, 20),
+      padding: const EdgeInsets.fromLTRB(0, 5, 0, 20),
       // by sangU 2024/01/16
       alignment: Alignment.centerLeft,
       width: 400,
-      margin: const EdgeInsets.fromLTRB(5, 10, 5, 5),
+      // 2024/02/29 by sangU02 기존 top margin = 10 / bottom margin = 5
+      margin: const EdgeInsets.fromLTRB(5, 15, 5, 10),
       // color: Colors.blue,
       decoration: BoxDecoration(
         // color: Colors.blue, // 컨테이너의 배경색
-        borderRadius: BorderRadius.circular(10.0),
+        borderRadius: BorderRadius.circular(20.0),
+        color: Colors.white,
         // 테두리의 둥근 정도
-        border: Border.all(
-          color: Colors.grey, // 테두리 색상
-          width: 1.0, // 테두리 두께
-        ),
+        // border: Border.all(
+        //   color: Colors.grey, // 테두리 색상
+        //   width: 1.0, // 테두리 두께
+        // ),
       ),
       child: Obx(() =>
           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -151,7 +153,14 @@ class _PatientInfoWidgetState extends State<PatientInfoWidget> {
                 Row(
                   // 환자 정보 위젯 검색 / 환자 검색
                   children: [
-                    const Text("환자 정보"),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    const Text(
+                      "환자 정보",
+                      style:
+                          TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                    ),
                     SizedBox(
                       width: 10,
                     ),
@@ -181,6 +190,9 @@ class _PatientInfoWidgetState extends State<PatientInfoWidget> {
                         padding: EdgeInsets.symmetric(
                             horizontal: 12, vertical: 8), // 버튼 패딩 조정
                       ),
+                    ),
+                    SizedBox(
+                      width: 5,
                     ),
                     ElevatedButton(
                       // 바코드 스캔 버튼
@@ -243,45 +255,68 @@ class _PatientInfoWidgetState extends State<PatientInfoWidget> {
                       }
                       return SizedBox(
                         height: 40,
-                        child: TextField(
-                          controller: _textFieldEditingController,
-                          onChanged: (value) {
-                            _textController.add(value);
-                          },
-                          onTap: () {
-                            selectedIdx = -1;
-                            // 기존 작성동의서나 처방동의서가 보이면 안됨
-                            print("isvisible false 이벤트 ");
-                            // 나머지요소들 안보이게
-                            _visibleController.toggleVisiblity(false);
+                        child: Container(
+                          margin: EdgeInsets.symmetric(horizontal: 20),
+                          child: TextField(
+                            controller: _textFieldEditingController,
+                            onChanged: (value) {
+                              _textController.add(value);
+                            },
+                            onTap: () {
+                              selectedIdx = -1;
+                              // 기존 작성동의서나 처방동의서가 보이면 안됨
+                              print("isvisible false 이벤트 ");
+                              // 나머지요소들 안보이게
+                              _visibleController.toggleVisiblity(false);
 
-                            // 선택된 환자 디자인 해제
-                            setState(() {
-                              isSelected = false;
-                            });
-                          },
-                          decoration: InputDecoration(
-                            labelText: '환자명을 입력하세요',
-                            labelStyle: TextStyle(
-                              fontSize: 10, // 글자 크기 조정
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                width: 1, // 테두리 두께 줄임
+                              // 선택된 환자 디자인 해제
+                              setState(() {
+                                isSelected = false;
+                              });
+                            },
+                            decoration: InputDecoration(
+                              labelText: '환자명을 입력하세요',
+                              labelStyle: TextStyle(
+                                fontSize: 10, // 글자 크기 조정
+                                color: Colors.grey.withOpacity(0.5)
                               ),
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  width: 1, // 테두리 두께 줄임
+                                  color: Colors.grey.withOpacity(0.5)
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    width: 1, // 테두리 두께 줄임
+                                    color: Colors.grey.withOpacity(0.5)
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    width: 1, // 테두리 두께 줄임
+                                    color: Colors.grey.withOpacity(0.5)
+                                ),
+                              ),
+                              contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 1), // 내부 패딩 조정
                             ),
-                            contentPadding: EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 1), // 내부 패딩 조정
-                          ),
-                          style: TextStyle(
-                            fontSize: 10, // 입력 텍스트의 글자 크기 조정
+                            style: TextStyle(
+                              fontSize: 10, // 입력 텍스트의 글자 크기 조정
+                            ),
                           ),
                         ),
                       );
                     }),
+                SizedBox(
+                  height: 10,
+                )
               ],
             ),
-            const Divider(thickness: 2, height: 20, color: Colors.grey),
+            const Divider(
+                thickness: 0.5,
+                height: 0,
+                color: Color.fromRGBO(233, 233, 233, 1)),
             Expanded(
                 child: RefreshIndicator(
                     // by sangU02 2024/1/5
@@ -310,246 +345,231 @@ class _PatientInfoWidgetState extends State<PatientInfoWidget> {
 
                                 try {
                                   return ListView.builder(
-                                      itemCount: data.length,
-                                      itemBuilder: (context, index) {
-                                        isSelected = index == selectedIdx;
+                                    itemCount: data.length,
+                                    itemBuilder: (context, index) {
+                                      bool isSelected = index == selectedIdx;
+                                      return InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            selectedIdx = index;
+                                            _visibleController
+                                                .toggleVisiblity(true);
+                                            Map<String, dynamic> patientDetail =
+                                                data[index];
+                                            _patientDetailController
+                                                .updatePatientInfo(
+                                                    patientInfo: patientDetail);
+                                          });
 
-                                        // print("@@isSelected$index");
-                                        //print("@@selectedIdx$selectedIdx");
-
-                                        // 각 환자 정보를 Card로 표시합니다.
-                                        return InkWell(
-                                          onTap: () {
-                                            setState(() {
-                                              // print('isVisible true');
-                                              selectedIdx = index;
-                                              _visibleController
-                                                  .toggleVisiblity(
-                                                      true); // true
-                                              Map<String, dynamic>
-                                                  patientDetail = data[index];
-                                              // print('선택한 환자 상세정보 : ${patientDetail.toString()}');
-                                              _patientDetailController
-                                                  .updatePatientInfo(
-                                                      patientInfo:
-                                                          patientDetail);
-
-                                              // 2024/02/28 by sangU02 작성동의서로 인해 클릭시 다시 빌드
-
-                                              // isVisible =
-                                              // true; // 처방동의서 등이 보이도록
-                                              // print("@@Selected index: $selectedIdx");
-                                            });
-
-                                            // 클릭한 카드의 데이터에 접근
-                                            var selectedData = data[index];
-
-                                            // 콘솔에 선택된 데이터 출력 (또는 다른 처리)
-                                            // print("@@클릭한 카드 데이터: $selectedData");
-                                            // print("@@클릭한 환자이름: ${selectedData['PatientName']}");
-                                          },
-                                          //카드색깔 변경
-                                          child: Card(
+                                          // 클릭한 카드의 데이터에 접근
+                                          var selectedData = data[index];
+                                        },
+                                        child: Container(
+                                          decoration: BoxDecoration(
                                             color: isSelected
-
-                                                ///클릭했을 때 카드 색깔 변경
-                                                ? Color.fromRGBO(
+                                                ? const Color.fromRGBO(
                                                     248, 249, 255, 1)
-
-                                                ///선택 안했을 때 카드 색깔 변경
-                                                ///기본 flutter 카드 색상
-                                                : Color.fromRGBO(
-                                                    249, 249, 249, 1),
-                                            elevation: isSelected ? 10 : 2,
-                                            // 선택된 카드에 더 높은 elevation
-                                            shadowColor: isSelected
-                                                ? Colors.black12
                                                 : Colors.white,
-                                            shape: isSelected
-                                                ? RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            20),
-                                                    side: BorderSide(
-                                                        color: Colors
-                                                            .blue.shade300,
-                                                        width: 2))
-                                                : RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10)),
-                                            //카드 사이 사이 간격
-                                            margin: const EdgeInsets.all(5.0),
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(16.0),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      Text(
-                                                        '${data[index]['PatientName']}',
-                                                        style: const TextStyle(
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
+                                            border: Border(
+                                              bottom: isSelected
+                                                  ? BorderSide(
+                                                      width: 2.0,
+                                                      color:
+                                                          Colors.blue.shade300)
+                                                  : const BorderSide(
+                                                      width: 0.5,
+                                                      color: Color.fromRGBO(
+                                                          233, 233, 233, 1),
+                                                    ),
+                                              top: BorderSide(
+                                                  width: 2.0,
+                                                  color: isSelected
+                                                      ? const Color.fromRGBO(
+                                                          115, 140, 243, 1)
+                                                      : Colors.transparent),
+                                              left: BorderSide(
+                                                  width: 2.0,
+                                                  color: isSelected
+                                                      ? const Color.fromRGBO(
+                                                          115, 140, 243, 1)
+                                                      : Colors.transparent),
+                                              right: BorderSide(
+                                                  width: 2.0,
+                                                  color: isSelected
+                                                      ? const Color.fromRGBO(
+                                                          115, 140, 243, 1)
+                                                      : Colors.transparent),
+                                            ),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(16.0),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      '${data[index]['PatientName']}',
+                                                      style: const TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.bold,
                                                       ),
-                                                      patientConsentInfo(
-                                                          consentType: data[
-                                                                  index]
-                                                              ['PatientCode']),
-                                                      patientConsentInfo(
-                                                          consentType: data[
-                                                                  index]
-                                                              ['ClnDeptCode']),
-                                                      Expanded(
-                                                        child: SizedBox(
-                                                          child: Row(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .end,
-                                                              children: [
-                                                                patientConsentInfo(
-                                                                    consentType:
-                                                                        '임시',
-                                                                    consentNum:
-                                                                        '3'),
-                                                                patientConsentInfo(
-                                                                    consentType:
-                                                                        '완료',
-                                                                    consentNum:
-                                                                        '4')
-                                                              ]),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 10,
-                                                  ),
-                                                  Row(
-                                                    children: [
-                                                      RichText(
-                                                        text: TextSpan(
-                                                          style: DefaultTextStyle
-                                                                  .of(context)
-                                                              .style,
-                                                          children: <TextSpan>[
-                                                            TextSpan(
-                                                                text: '병동/병실: ',
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .grey
-                                                                        .shade700)),
-                                                            TextSpan(
-                                                                text:
-                                                                    '${data[index]['Ward']}/${data[index]['Room']}'),
+                                                    ),
+                                                    patientConsentInfo(
+                                                        consentType: data[index]
+                                                            ['PatientCode']),
+                                                    patientConsentInfo(
+                                                        consentType: data[index]
+                                                            ['ClnDeptCode']),
+                                                    Expanded(
+                                                      child: SizedBox(
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .end,
+                                                          children: [
+                                                            patientConsentInfo(
+                                                                consentType:
+                                                                    '임시',
+                                                                consentNum:
+                                                                    '3'),
+                                                            patientConsentInfo(
+                                                                consentType:
+                                                                    '완료',
+                                                                consentNum:
+                                                                    '3'),
                                                           ],
                                                         ),
                                                       ),
-                                                      const SizedBox(
-                                                        width: 80,
-                                                      ),
-                                                      RichText(
-                                                        text: TextSpan(
-                                                          style: DefaultTextStyle
-                                                                  .of(context)
-                                                              .style,
-                                                          children: <TextSpan>[
-                                                            TextSpan(
-                                                                text: '나이/성별: ',
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .grey
-                                                                        .shade700)),
-                                                            TextSpan(
-                                                                text:
-                                                                    '${data[index]['Age']} / ${data[index]['Sex']}'),
-                                                          ],
-                                                        ),
-                                                      )
-                                                    ],
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 3,
-                                                  ),
-                                                  Row(
-                                                    children: [
-                                                      RichText(
-                                                        text: TextSpan(
-                                                          style: DefaultTextStyle
-                                                                  .of(context)
-                                                              .style,
-                                                          children: <TextSpan>[
-                                                            TextSpan(
-                                                                text:
-                                                                    '${dateText}: ',
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .grey
-                                                                        .shade700)),
-                                                            TextSpan(
-                                                                text:
-                                                                    '${data[index]['AdmissionDate']}'),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      const SizedBox(
-                                                        width: 72,
-                                                      ),
-                                                      RichText(
-                                                        text: TextSpan(
-                                                          style: DefaultTextStyle
-                                                                  .of(context)
-                                                              .style,
-                                                          children: <TextSpan>[
-                                                            TextSpan(
-                                                                text:
-                                                                    '$docText: ',
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .grey
-                                                                        .shade700)),
-                                                            TextSpan(
-                                                                text:
-                                                                    '${data[index]['ChargeName']}'),
-                                                          ],
-                                                        ),
-                                                      )
-                                                    ],
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 3,
-                                                  ),
-                                                  RichText(
-                                                    text: TextSpan(
-                                                      style:
-                                                          DefaultTextStyle.of(
-                                                                  context)
-                                                              .style,
-                                                      children: <TextSpan>[
-                                                        TextSpan(
-                                                            text:
-                                                                '$alertText: ',
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 10),
+                                                Row(
+                                                  children: [
+                                                    RichText(
+                                                      text: TextSpan(
+                                                        style:
+                                                            DefaultTextStyle.of(
+                                                                    context)
+                                                                .style,
+                                                        children: <TextSpan>[
+                                                          TextSpan(
+                                                            text: '병동/병실: ',
                                                             style: TextStyle(
                                                                 color: Colors
                                                                     .grey
-                                                                    .shade700)),
-                                                        TextSpan(
+                                                                    .shade700),
+                                                          ),
+                                                          TextSpan(
                                                             text:
-                                                                '${data[index]['DiagName']}'),
-                                                      ],
+                                                                '${data[index]['Ward']}/${data[index]['Room']}',
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
-                                                  )
-                                                ],
-                                              ),
+                                                    const SizedBox(width: 80),
+                                                    RichText(
+                                                      text: TextSpan(
+                                                        style:
+                                                            DefaultTextStyle.of(
+                                                                    context)
+                                                                .style,
+                                                        children: <TextSpan>[
+                                                          TextSpan(
+                                                            text: '나이/성별: ',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .grey
+                                                                    .shade700),
+                                                          ),
+                                                          TextSpan(
+                                                            text:
+                                                                '${data[index]['Age']} / ${data[index]['Sex']}',
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 3),
+                                                Row(
+                                                  children: [
+                                                    RichText(
+                                                      text: TextSpan(
+                                                        style:
+                                                            DefaultTextStyle.of(
+                                                                    context)
+                                                                .style,
+                                                        children: <TextSpan>[
+                                                          TextSpan(
+                                                            text:
+                                                                '${dateText}: ',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .grey
+                                                                    .shade700),
+                                                          ),
+                                                          TextSpan(
+                                                            text:
+                                                                '${data[index]['AdmissionDate']}',
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 72),
+                                                    RichText(
+                                                      text: TextSpan(
+                                                        style:
+                                                            DefaultTextStyle.of(
+                                                                    context)
+                                                                .style,
+                                                        children: <TextSpan>[
+                                                          TextSpan(
+                                                            text: '$docText: ',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .grey
+                                                                    .shade700),
+                                                          ),
+                                                          TextSpan(
+                                                            text:
+                                                                '${data[index]['ChargeName']}',
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 3),
+                                                RichText(
+                                                  text: TextSpan(
+                                                    style: DefaultTextStyle.of(
+                                                            context)
+                                                        .style,
+                                                    children: <TextSpan>[
+                                                      TextSpan(
+                                                        text: '$alertText: ',
+                                                        style: TextStyle(
+                                                            color: Colors
+                                                                .grey.shade700),
+                                                      ),
+                                                      TextSpan(
+                                                        text:
+                                                            '${data[index]['DiagName']}',
+                                                      ),
+                                                    ],
+                                                  ),
+                                                )
+                                              ],
                                             ),
                                           ),
-                                        );
-                                      });
+                                        ),
+                                      );
+                                    },
+                                  );
                                 } catch (e) {
                                   print("예외 발생 : $e");
                                   return Center(
@@ -601,235 +621,212 @@ class _PatientInfoWidgetState extends State<PatientInfoWidget> {
                               }
                               // print('@@searchList 내용 : $searchList');
                               return ListView.builder(
-                                  itemCount: searchList.length,
-                                  itemBuilder: (context, index) {
-                                    bool isSelected = index == selectedIdx;
+                                itemCount: searchList.length,
+                                itemBuilder: (context, index) {
+                                  bool isSelected = index == selectedIdx;
 
-                                    // print("@@isSelected$index");
-                                    //print("@@selectedIdx$selectedIdx");
+                                  return InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        selectedIdx = index;
+                                        _visibleController
+                                            .toggleVisiblity(true);
+                                        Map<String, dynamic> patientDetail =
+                                            searchList[index];
+                                        _patientDetailController
+                                            .updatePatientInfo(
+                                                patientInfo: patientDetail);
+                                      });
 
-                                    // 각 환자 정보를 Card로 표시합니다.
-                                    return InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          // print('isVisible true');
-                                          selectedIdx = index;
-                                          _visibleController
-                                              .toggleVisiblity(true); // true
-                                          Map<String, dynamic> patientDetail =
-                                              searchList[index];
-                                          // print('선택한 환자 상세정보 : ${patientDetail.toString()}');
-                                          // 2023/02/27 환자 상세정보 상태관리
-                                          _patientDetailController
-                                              .updatePatientInfo(
-                                                  patientInfo: patientDetail);
-
-                                          // isVisible =
-                                          // true; // 처방동의서 등이 보이도록
-                                          // print("@@Selected index: $selectedIdx");
-                                        });
-
-                                        // 클릭한 카드의 데이터에 접근
-                                        var selectedData = searchList[index];
-
-                                        // 콘솔에 선택된 데이터 출력 (또는 다른 처리)
-                                        // print("@@클릭한 카드 데이터: $selectedData");
-                                        // print("@@클릭한 환자이름: ${selectedData['PatientName']}");
-                                      },
-                                      //카드색깔 변경
-                                      child: Card(
+                                      // 클릭한 카드의 데이터에 접근
+                                      var selectedData = searchList[index];
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
                                         color: isSelected
-
-                                            ///클릭했을 때 카드 색깔 변경
                                             ? Color.fromRGBO(248, 249, 255, 1)
-
-                                            ///선택 안했을 때 카드 색깔 변경
-                                            ///기본 flutter 카드 색상
-                                            : Color.fromRGBO(249, 249, 249, 1),
-                                        elevation: isSelected ? 10 : 2,
-                                        // 선택된 카드에 더 높은 elevation
-                                        shadowColor: isSelected
-                                            ? Colors.black12
                                             : Colors.white,
-                                        shape: isSelected
-                                            ? RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
-                                                side: BorderSide(
-                                                    color: Colors.blue.shade300,
-                                                    width: 2))
-                                            : RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10)),
-                                        //카드 사이 사이 간격
-                                        margin: const EdgeInsets.all(5.0),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(16.0),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Text(
-                                                    '${searchList[index]['PatientName']}',
-                                                    style: const TextStyle(
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                                  patientConsentInfo(
-                                                      consentType:
-                                                          searchList[index]
-                                                              ['PatientCode']),
-                                                  patientConsentInfo(
-                                                      consentType:
-                                                          searchList[index]
-                                                              ['ClnDeptCode']),
-                                                  Expanded(
-                                                    child: SizedBox(
-                                                      child: Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .end,
-                                                          children: [
-                                                            patientConsentInfo(
-                                                                consentType:
-                                                                    '임시',
-                                                                consentNum:
-                                                                    '3'),
-                                                            patientConsentInfo(
-                                                                consentType:
-                                                                    '완료',
-                                                                consentNum: '4')
-                                                          ]),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(
-                                                height: 10,
-                                              ),
-                                              Row(
-                                                children: [
-                                                  RichText(
-                                                    text: TextSpan(
-                                                      style:
-                                                          DefaultTextStyle.of(
-                                                                  context)
-                                                              .style,
-                                                      children: <TextSpan>[
-                                                        TextSpan(
-                                                            text: '병동/병실: ',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .grey
-                                                                    .shade700)),
-                                                        TextSpan(
-                                                            text:
-                                                                '${searchList[index]['Ward']}/${searchList[index]['Room']}'),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  const SizedBox(
-                                                    width: 80,
-                                                  ),
-                                                  RichText(
-                                                    text: TextSpan(
-                                                      style:
-                                                          DefaultTextStyle.of(
-                                                                  context)
-                                                              .style,
-                                                      children: <TextSpan>[
-                                                        TextSpan(
-                                                            text: '나이/성별: ',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .grey
-                                                                    .shade700)),
-                                                        TextSpan(
-                                                            text:
-                                                                '${searchList[index]['Age']} / ${searchList[index]['Sex']}'),
-                                                      ],
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
-                                              const SizedBox(
-                                                height: 3,
-                                              ),
-                                              Row(
-                                                children: [
-                                                  RichText(
-                                                    text: TextSpan(
-                                                      style:
-                                                          DefaultTextStyle.of(
-                                                                  context)
-                                                              .style,
-                                                      children: <TextSpan>[
-                                                        TextSpan(
-                                                            text:
-                                                                '${dateText}: ',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .grey
-                                                                    .shade700)),
-                                                        TextSpan(
-                                                            text:
-                                                                '${searchList[index]['AdmissionDate']}'),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  const SizedBox(
-                                                    width: 72,
-                                                  ),
-                                                  RichText(
-                                                    text: TextSpan(
-                                                      style:
-                                                          DefaultTextStyle.of(
-                                                                  context)
-                                                              .style,
-                                                      children: <TextSpan>[
-                                                        TextSpan(
-                                                            text: '$docText: ',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .grey
-                                                                    .shade700)),
-                                                        TextSpan(
-                                                            text:
-                                                                '${searchList[index]['ChargeName']}'),
-                                                      ],
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
-                                              const SizedBox(
-                                                height: 3,
-                                              ),
-                                              RichText(
-                                                text: TextSpan(
-                                                  style: DefaultTextStyle.of(
-                                                          context)
-                                                      .style,
-                                                  children: <TextSpan>[
-                                                    TextSpan(
-                                                        text: '$alertText: ',
-                                                        style: TextStyle(
-                                                            color: Colors.grey
-                                                                .shade700)),
-                                                    TextSpan(
-                                                        text:
-                                                            '${searchList[index]['DiagName']}'),
-                                                  ],
-                                                ),
-                                              )
-                                            ],
-                                          ),
+                                        border: Border(
+                                          bottom: isSelected
+                                              ? BorderSide(
+                                                  width: 2.0,
+                                                  color: Colors.blue.shade300)
+                                              : BorderSide(
+                                                  width: 0.5,
+                                                  color: Color.fromRGBO(233, 233, 233, 1),),
+                                          top: isSelected
+                                              ? BorderSide(
+                                                  width: 2.0,
+                                                  color: Colors.blue.shade300)
+                                              : BorderSide.none,
+                                          left: isSelected
+                                              ? BorderSide(
+                                                  width: 2.0,
+                                                  color: Colors.blue.shade300)
+                                              : BorderSide.none,
+                                          right: isSelected
+                                              ? BorderSide(
+                                                  width: 2.0,
+                                                  color: Colors.blue.shade300)
+                                              : BorderSide.none,
                                         ),
                                       ),
-                                    );
-                                  });
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(16.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  '${searchList[index]['PatientName']}',
+                                                  style: const TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                patientConsentInfo(
+                                                    consentType:
+                                                        searchList[index]
+                                                            ['PatientCode']),
+                                                patientConsentInfo(
+                                                    consentType:
+                                                        searchList[index]
+                                                            ['ClnDeptCode']),
+                                                Expanded(
+                                                  child: SizedBox(
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment.end,
+                                                      children: [
+                                                        patientConsentInfo(
+                                                            consentType: '임시',
+                                                            consentNum: '3'),
+                                                        patientConsentInfo(
+                                                            consentType: '완료',
+                                                            consentNum: '3'),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 10),
+                                            Row(
+                                              children: [
+                                                RichText(
+                                                  text: TextSpan(
+                                                    style: DefaultTextStyle.of(
+                                                            context)
+                                                        .style,
+                                                    children: <TextSpan>[
+                                                      TextSpan(
+                                                        text: '병동/병실: ',
+                                                        style: TextStyle(
+                                                            color: Colors
+                                                                .grey.shade700),
+                                                      ),
+                                                      TextSpan(
+                                                        text:
+                                                            '${searchList[index]['Ward']}/${searchList[index]['Room']}',
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 80),
+                                                RichText(
+                                                  text: TextSpan(
+                                                    style: DefaultTextStyle.of(
+                                                            context)
+                                                        .style,
+                                                    children: <TextSpan>[
+                                                      TextSpan(
+                                                        text: '나이/성별: ',
+                                                        style: TextStyle(
+                                                            color: Colors
+                                                                .grey.shade700),
+                                                      ),
+                                                      TextSpan(
+                                                        text:
+                                                            '${searchList[index]['Age']} / ${searchList[index]['Sex']}',
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 3),
+                                            Row(
+                                              children: [
+                                                RichText(
+                                                  text: TextSpan(
+                                                    style: DefaultTextStyle.of(
+                                                            context)
+                                                        .style,
+                                                    children: <TextSpan>[
+                                                      TextSpan(
+                                                        text: '${dateText}: ',
+                                                        style: TextStyle(
+                                                            color: Colors
+                                                                .grey.shade700),
+                                                      ),
+                                                      TextSpan(
+                                                        text:
+                                                            '${searchList[index]['AdmissionDate']}',
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 72),
+                                                RichText(
+                                                  text: TextSpan(
+                                                    style: DefaultTextStyle.of(
+                                                            context)
+                                                        .style,
+                                                    children: <TextSpan>[
+                                                      TextSpan(
+                                                        text: '$docText: ',
+                                                        style: TextStyle(
+                                                            color: Colors
+                                                                .grey.shade700),
+                                                      ),
+                                                      TextSpan(
+                                                        text:
+                                                            '${searchList[index]['ChargeName']}',
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 3),
+                                            RichText(
+                                              text: TextSpan(
+                                                style:
+                                                    DefaultTextStyle.of(context)
+                                                        .style,
+                                                children: <TextSpan>[
+                                                  TextSpan(
+                                                    text: '$alertText: ',
+                                                    style: TextStyle(
+                                                        color: Colors
+                                                            .grey.shade700),
+                                                  ),
+                                                  TextSpan(
+                                                    text:
+                                                        '${searchList[index]['DiagName']}',
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
                             }))),
           ])),
     );
@@ -843,9 +840,13 @@ class _PatientInfoWidgetState extends State<PatientInfoWidget> {
    * consentNum은 알림 표시를 위해 서식에 대한 정보를 그릴때만 인자로 입력
    */
   Widget patientConsentInfo({required String consentType, String? consentNum}) {
-    Color textColor = Colors.lightGreen;
+    // 과코드인지 환자번호인지 길이로 구분한다.
+    // 과코드면 true
+    // 아니면 false
+    bool deptOrPtCode = false;
+    Color textColor = Color.fromRGBO(115, 140, 241, 1);
     if (consentType == '임시') {
-      textColor = Colors.grey;
+      textColor = Color.fromRGBO(168, 168, 168, 1);
     } else if (isNumeric(consentType)) {
       textColor = const Color.fromRGBO(115, 140, 241, 1);
     } else if (isEnglish(consentType)) {
@@ -859,12 +860,12 @@ class _PatientInfoWidgetState extends State<PatientInfoWidget> {
             children: [
               // 다른 위젯들을 추가
               Container(
-                height: 25,
+                height: 30,
                 margin: isEnglish(consentType)
                     ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
                     : const EdgeInsets.fromLTRB(10, 0, 0, 0),
                 // 과코드일때만 위젯의 왼쪽 마진을 줄인다.
-                padding: const EdgeInsets.all(4.0),
+                padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                 decoration: BoxDecoration(
                     color: Colors.grey[200],
                     borderRadius: BorderRadius.circular(12.5)),
@@ -877,7 +878,7 @@ class _PatientInfoWidgetState extends State<PatientInfoWidget> {
               // 알림 아이콘
               Positioned(
                 top: -11.0,
-                right: -11.0,
+                right: -7.0,
                 child: Container(
                   padding: EdgeInsets.all(4.0),
                   decoration: BoxDecoration(
@@ -894,11 +895,13 @@ class _PatientInfoWidgetState extends State<PatientInfoWidget> {
             ],
           )
         : Container(
-            height: 25,
+            height: 30,
             margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
-            padding: EdgeInsets.all(4.0),
+            padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
             decoration: BoxDecoration(
-                color: Colors.grey[200],
+                color: deptOrPtCode
+                    ? Color.fromRGBO(240, 242, 255, 1)
+                    : Color.fromRGBO(236, 246, 255, 1),
                 borderRadius: BorderRadius.circular(12.5)),
             child: Text(
               consentType,

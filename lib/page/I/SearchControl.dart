@@ -97,13 +97,20 @@ class _PatientIWidgetState extends State<PatientIWidget> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(
-                  height: 10,
-                ),
-                searchOptionBar(
-                    widget.categoryCode, _patientSearchValueController),
-                const SizedBox(
-                  height: 5,
+                Container(
+                  color: Colors.white,
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      searchOptionBar(widget.categoryCode,
+                          _patientSearchValueController, isVerticalMode),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                    ],
+                  ),
                 ),
                 Expanded(
                   child: Row(
@@ -223,14 +230,16 @@ class _PatientIWidgetState extends State<PatientIWidget> {
    * @since 2024/02/14
    * @note 카테고리에 따른 검색옵션 위젯 반환
    */
-  Widget searchOptionBar(String categoryCode,
-      PatientSearchValueController patientSearchValueController) {
+  Widget searchOptionBar(
+      String categoryCode,
+      PatientSearchValueController patientSearchValueController,
+      bool isVerticalMode) {
     Widget searchOption = Text("검색옵션 생성 오류 발생");
     switch (categoryCode) {
       case "I":
-        searchOption = SizedBox(
-          width: 750,
-          height: 30,
+        searchOption = Container(
+          width: isVerticalMode ? 800 : 805,
+          height: 40,
           child: Row(
             children: [
               const SizedBox(
@@ -244,11 +253,14 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey.withOpacity(0.5)),
                   ),
+                  // 포커싱 잡혔을때 노란색은 쫌;;
                   focusedBorder: OutlineInputBorder(
                     borderSide:
-                        BorderSide(color: Colors.yellow.withOpacity(0.5)),
+                        BorderSide(color: Colors.black.withOpacity(0.5)),
                   ),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                  suffixIcon: Icon(Icons.calendar_today),
+                  suffixIconColor: Colors.grey.withOpacity(0.5),
                 ),
                 readOnly: true,
                 onTap: () {
@@ -263,7 +275,10 @@ class _PatientIWidgetState extends State<PatientIWidget> {
               Expanded(
                 child: DropdownButtonFormField<String>(
                   value: wardList[0],
-                  icon: const Icon(Icons.arrow_drop_down),
+                  icon: const Icon(
+                    Icons.expand_more,
+                    color: Colors.grey,
+                  ),
                   onTap: () {
                     _visibleController.toggleVisiblity(false);
                   },
@@ -274,7 +289,7 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderSide:
-                          BorderSide(color: Colors.yellow.withOpacity(0.5)),
+                          BorderSide(color: Colors.black.withOpacity(0.5)),
                     ),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 10),
                   ),
@@ -288,7 +303,8 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                       value: value,
                       child: Text(
                         value,
-                        style: const TextStyle(fontSize: 12),
+                        style:
+                            const TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                     );
                   }).toList(),
@@ -298,7 +314,10 @@ class _PatientIWidgetState extends State<PatientIWidget> {
               Expanded(
                 child: DropdownButtonFormField<String>(
                   value: deptList[0],
-                  icon: const Icon(Icons.arrow_drop_down),
+                  icon: const Icon(
+                    Icons.expand_more,
+                    color: Colors.grey,
+                  ),
                   decoration: InputDecoration(
                     enabledBorder: OutlineInputBorder(
                       borderSide:
@@ -306,7 +325,7 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderSide:
-                          BorderSide(color: Colors.yellow.withOpacity(0.5)),
+                          BorderSide(color: Colors.black.withOpacity(0.5)),
                     ),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 10),
                   ),
@@ -320,7 +339,8 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                       value: value,
                       child: Text(
                         value,
-                        style: const TextStyle(fontSize: 12),
+                        style:
+                            const TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                     );
                   }).toList(),
@@ -332,7 +352,10 @@ class _PatientIWidgetState extends State<PatientIWidget> {
               Expanded(
                 child: DropdownButtonFormField<String>(
                   value: docList[0],
-                  icon: const Icon(Icons.arrow_drop_down),
+                  icon: const Icon(
+                    Icons.expand_more,
+                    color: Colors.grey,
+                  ),
                   decoration: InputDecoration(
                     enabledBorder: OutlineInputBorder(
                       borderSide:
@@ -340,7 +363,7 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderSide:
-                          BorderSide(color: Colors.yellow.withOpacity(0.5)),
+                          BorderSide(color: Colors.black.withOpacity(0.5)),
                     ),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 10),
                   ),
@@ -354,43 +377,48 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                       value: value,
                       child: Text(
                         value,
-                        style: const TextStyle(fontSize: 12),
+                        style:
+                            const TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                     );
                   }).toList(),
                 ),
               ),
-              const SizedBox(width: 10),
-              ElevatedButton(
-                onPressed: () {
-                  _patientSearchValueController.searchValueUpdate(
-                    dateController.text,
-                    wardValue,
-                    deptValue,
-                    docValue,
-                  );
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Icon(Icons.search),
-                    SizedBox(width: 8),
-                    Text('검색'),
-                  ],
-                ),
-                style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
-                  foregroundColor:
-                      MaterialStateProperty.all<Color>(Colors.black),
-                ),
+              const SizedBox(width: 50),
+              // 2024/02/29 by sangU02 디자인 수정
+              IconButton(
+                  visualDensity: VisualDensity(horizontal: -3, vertical: -1),
+                  // 아이콘과 텍스트 간격 조절
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(Icons.search),
+                  iconSize: 33,
+                  color: Colors.grey,
+                  onPressed: () {
+                    print("@검색클릭");
+                    _patientSearchValueController.searchValueUpdate(
+                      dateController.text,
+                      wardValue,
+                      deptValue,
+                      docValue,
+                    );
+                  }),
+              SizedBox(
+                width: 10,
               ),
               IconButton(
+                visualDensity: VisualDensity(horizontal: -3, vertical: -1),
+                // 아이콘과 텍스트 간격 조절
+                padding: EdgeInsets.zero,
+                color: Colors.grey,
                 icon: const Icon(Icons.refresh_rounded),
+                iconSize: 33,
                 onPressed: () {
                   print("@새로고침클릭");
                   // 설정 로직 수행
                 },
+              ),
+              SizedBox(
+                width: 10,
               ),
             ],
           ),
@@ -399,8 +427,8 @@ class _PatientIWidgetState extends State<PatientIWidget> {
       // 외래
       case "O":
         searchOption = SizedBox(
-          width: 750,
-          height: 30,
+          width: isVerticalMode ? 800 : 805,
+          height: 40,
           child: Row(
             children: [
               const SizedBox(
@@ -411,67 +439,135 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                 controller: dateController,
                 decoration: InputDecoration(
                   hintText: "$dateText",
-                  // 테두리 색상을 설정합니다. 이는 텍스트 필드가 활성화되지 않았을 때 적용됩니다.
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.grey.withOpacity(0.5)), // 연한 빨간색 테두리
+                    borderSide: BorderSide(color: Colors.grey.withOpacity(0.5)),
                   ),
-                  // 텍스트 필드에 포커스가 있을 때의 테두리 색상을 설정합니다.
+                  // 포커싱 잡혔을때 노란색은 쫌;;
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.yellow.withOpacity(0.5)), // 연한 빨간색 테두리
+                    borderSide:
+                        BorderSide(color: Colors.black.withOpacity(0.5)),
                   ),
-                  // 텍스트 필드를 편집할 수 없을 때의 테두리 색상을 설정합니다.
-                  // disabledBorder: OutlineInputBorder(
-                  //   borderSide: BorderSide(
-                  //       color: Colors.red.withOpacity(0.5)), // 연한 빨간색 테두리
-                  // ),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                  suffixIcon: Icon(Icons.calendar_today),
+                  suffixIconColor: Colors.grey.withOpacity(0.5),
                 ),
                 readOnly: true,
-                // 사용자가 직접 입력하지 못하도록 설정
                 onTap: () {
-                  selectDate(context); // 달력 대화 상자를 보여줍니다.
-                  // print("@@$context");
+                  _visibleController.toggleVisiblity(false);
+                  selectDate(context);
                 },
                 style: const TextStyle(
-                  fontSize: 11, // 원하는 텍스트 크기로 설정
-                  // 다른 스타일 속성들도 여기에 추가할 수 있습니다.
+                  fontSize: 11,
                 ),
               )),
               const SizedBox(width: 10), // 요소 사이 간격
-              DropDownBuilder(menuList: deptList),
+              Expanded(
+                child: DropdownButtonFormField<String>(
+                  value: deptList[0],
+                  icon: const Icon(
+                    Icons.expand_more,
+                    color: Colors.grey,
+                  ),
+                  decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Colors.grey.withOpacity(0.5)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Colors.black.withOpacity(0.5)),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                  ),
+                  onChanged: (String? value) {
+                    setState(() {
+                      deptValue = value!;
+                    });
+                  },
+                  items: deptList.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(
+                        value,
+                        style:
+                            const TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
               const SizedBox(
                 width: 10,
               ),
-              DropDownBuilder(menuList: docList),
-              const SizedBox(width: 10), // 요소 사이 간격
-              ElevatedButton(
-                // 바코드 스캔 버튼
-                onPressed: () {},
-                child: Row(
-                  mainAxisSize: MainAxisSize.min, // 아이콘과 텍스트를 버튼 내부 중앙에 위치시킴
-                  children: const [
-                    Icon(Icons.search), // 아이콘
-                    SizedBox(width: 8), // 아이콘과 텍스트 사이의 간격
-                    Text('검색'), // 텍스트 추가
-                  ],
-                ),
-                style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
-                  // 아이콘 색상을 검은색으로 지정
-                  foregroundColor:
-                      MaterialStateProperty.all<Color>(Colors.black),
+              Expanded(
+                child: DropdownButtonFormField<String>(
+                  value: docList[0],
+                  icon: const Icon(
+                    Icons.expand_more,
+                    color: Colors.grey,
+                  ),
+                  decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Colors.grey.withOpacity(0.5)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Colors.black.withOpacity(0.5)),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                  ),
+                  onChanged: (String? value) {
+                    setState(() {
+                      docValue = value!;
+                    });
+                  },
+                  items: docList.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(
+                        value,
+                        style:
+                            const TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                    );
+                  }).toList(),
                 ),
               ),
-
+              const SizedBox(width: 50), // 요소 사이 간격
               IconButton(
+                  visualDensity: VisualDensity(horizontal: -3, vertical: -1),
+                  // 아이콘과 텍스트 간격 조절
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(Icons.search),
+                  iconSize: 33,
+                  color: Colors.grey,
+                  onPressed: () {
+                    print("@검색클릭");
+                    _patientSearchValueController.searchValueUpdate(
+                      dateController.text,
+                      wardValue,
+                      deptValue,
+                      docValue,
+                    );
+                  }),
+              SizedBox(
+                width: 10,
+              ),
+              IconButton(
+                visualDensity: VisualDensity(horizontal: -3, vertical: -1),
+                // 아이콘과 텍스트 간격 조절
+                padding: EdgeInsets.zero,
+                color: Colors.grey,
                 icon: const Icon(Icons.refresh_rounded),
+                iconSize: 33,
                 onPressed: () {
                   print("@새로고침클릭");
                   // 설정 로직 수행
                 },
+              ),
+              SizedBox(
+                width: 10,
               ),
               // Text(_isListening ? '녹음 중...' : ''),
             ],
@@ -482,8 +578,8 @@ class _PatientIWidgetState extends State<PatientIWidget> {
       case "E":
         List<String> emerDeptList = ["응급의학과"];
         searchOption = SizedBox(
-          width: 750,
-          height: 30,
+          width: isVerticalMode ? 800 : 805,
+          height: 40,
           child: Row(
             children: [
               const SizedBox(
@@ -494,32 +590,25 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                 controller: dateController,
                 decoration: InputDecoration(
                   hintText: "$dateText",
-                  // 테두리 색상을 설정합니다. 이는 텍스트 필드가 활성화되지 않았을 때 적용됩니다.
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.grey.withOpacity(0.5)), // 연한 빨간색 테두리
+                    borderSide: BorderSide(color: Colors.grey.withOpacity(0.5)),
                   ),
-                  // 텍스트 필드에 포커스가 있을 때의 테두리 색상을 설정합니다.
+                  // 포커싱 잡혔을때 노란색은 쫌;;
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.yellow.withOpacity(0.5)), // 연한 빨간색 테두리
+                    borderSide:
+                        BorderSide(color: Colors.black.withOpacity(0.5)),
                   ),
-                  // 텍스트 필드를 편집할 수 없을 때의 테두리 색상을 설정합니다.
-                  // disabledBorder: OutlineInputBorder(
-                  //   borderSide: BorderSide(
-                  //       color: Colors.red.withOpacity(0.5)), // 연한 빨간색 테두리
-                  // ),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                  suffixIcon: Icon(Icons.calendar_today),
+                  suffixIconColor: Colors.grey.withOpacity(0.5),
                 ),
                 readOnly: true,
-                // 사용자가 직접 입력하지 못하도록 설정
                 onTap: () {
-                  selectDate(context); // 달력 대화 상자를 보여줍니다.
-                  // print("@@$context");
+                  _visibleController.toggleVisiblity(false);
+                  selectDate(context);
                 },
                 style: const TextStyle(
-                  fontSize: 11, // 원하는 텍스트 크기로 설정
-                  // 다른 스타일 속성들도 여기에 추가할 수 있습니다.
+                  fontSize: 11,
                 ),
               )),
               const SizedBox(width: 10), // 요소 사이 간격
@@ -528,35 +617,41 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                 width: 10,
               ),
               DropDownBuilder(menuList: docList),
-              const SizedBox(width: 10), // 요소 사이 간격
-              ElevatedButton(
-                // 바코드 스캔 버튼
-                onPressed: () {},
-                child: Row(
-                  mainAxisSize: MainAxisSize.min, // 아이콘과 텍스트를 버튼 내부 중앙에 위치시킴
-                  children: const [
-                    Icon(Icons.search), // 아이콘
-                    SizedBox(width: 8), // 아이콘과 텍스트 사이의 간격
-                    Text('검색'), // 텍스트 추가
-                  ],
-                ),
-                style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
-                  // 아이콘 색상을 검은색으로 지정
-                  foregroundColor:
-                      MaterialStateProperty.all<Color>(Colors.black),
-                ),
-              ),
-
+              const SizedBox(width: 50), // 요소 사이 간격
               IconButton(
+                  visualDensity: VisualDensity(horizontal: -3, vertical: -1),
+                  // 아이콘과 텍스트 간격 조절
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(Icons.search),
+                  iconSize: 33,
+                  color: Colors.grey,
+                  onPressed: () {
+                    print("@검색클릭");
+                    _patientSearchValueController.searchValueUpdate(
+                      dateController.text,
+                      wardValue,
+                      deptValue,
+                      docValue,
+                    );
+                  }),
+              SizedBox(
+                width: 10,
+              ),
+              IconButton(
+                visualDensity: VisualDensity(horizontal: -3, vertical: -1),
+                // 아이콘과 텍스트 간격 조절
+                padding: EdgeInsets.zero,
+                color: Colors.grey,
                 icon: const Icon(Icons.refresh_rounded),
+                iconSize: 33,
                 onPressed: () {
                   print("@새로고침클릭");
                   // 설정 로직 수행
                 },
               ),
-              // Text(_isListening ? '녹음 중...' : ''),
+              SizedBox(
+                width: 10,
+              ),
             ],
           ),
         );
@@ -564,8 +659,8 @@ class _PatientIWidgetState extends State<PatientIWidget> {
       // 수술
       case "S":
         searchOption = SizedBox(
-          width: 750,
-          height: 30,
+          width: isVerticalMode ? 800 : 805,
+          height: 40,
           child: Row(
             children: [
               const SizedBox(
@@ -575,33 +670,26 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                   child: TextField(
                 controller: dateController,
                 decoration: InputDecoration(
-                  hintText: "${dateText}",
-                  // 테두리 색상을 설정합니다. 이는 텍스트 필드가 활성화되지 않았을 때 적용됩니다.
+                  hintText: "$dateText",
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.grey.withOpacity(0.5)), // 연한 빨간색 테두리
+                    borderSide: BorderSide(color: Colors.grey.withOpacity(0.5)),
                   ),
-                  // 텍스트 필드에 포커스가 있을 때의 테두리 색상을 설정합니다.
+                  // 포커싱 잡혔을때 노란색은 쫌;;
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.yellow.withOpacity(0.5)), // 연한 빨간색 테두리
+                    borderSide:
+                        BorderSide(color: Colors.black.withOpacity(0.5)),
                   ),
-                  // 텍스트 필드를 편집할 수 없을 때의 테두리 색상을 설정합니다.
-                  // disabledBorder: OutlineInputBorder(
-                  //   borderSide: BorderSide(
-                  //       color: Colors.red.withOpacity(0.5)), // 연한 빨간색 테두리
-                  // ),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                  suffixIcon: Icon(Icons.calendar_today),
+                  suffixIconColor: Colors.grey.withOpacity(0.5),
                 ),
                 readOnly: true,
-                // 사용자가 직접 입력하지 못하도록 설정
                 onTap: () {
-                  selectDate(context); // 달력 대화 상자를 보여줍니다.
-                  // print("@@$context");
+                  _visibleController.toggleVisiblity(false);
+                  selectDate(context);
                 },
                 style: const TextStyle(
-                  fontSize: 11, // 원하는 텍스트 크기로 설정
-                  // 다른 스타일 속성들도 여기에 추가할 수 있습니다.
+                  fontSize: 11,
                 ),
               )),
               const SizedBox(width: 10), // 요소 사이 간격
@@ -648,8 +736,8 @@ class _PatientIWidgetState extends State<PatientIWidget> {
       // 검사실
       case "INS":
         searchOption = SizedBox(
-          width: 750,
-          height: 30,
+          width: isVerticalMode ? 800 : 805,
+          height: 40,
           child: Row(
             children: [
               const SizedBox(
@@ -657,37 +745,32 @@ class _PatientIWidgetState extends State<PatientIWidget> {
               ),
               Expanded(
                   child: TextField(
-                controller: dateController,
-                decoration: InputDecoration(
-                  hintText: "$dateText",
-                  // 테두리 색상을 설정합니다. 이는 텍스트 필드가 활성화되지 않았을 때 적용됩니다.
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.grey.withOpacity(0.5)), // 연한 빨간색 테두리
-                  ),
-                  // 텍스트 필드에 포커스가 있을 때의 테두리 색상을 설정합니다.
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.yellow.withOpacity(0.5)), // 연한 빨간색 테두리
-                  ),
-                  // 텍스트 필드를 편집할 수 없을 때의 테두리 색상을 설정합니다.
-                  // disabledBorder: OutlineInputBorder(
-                  //   borderSide: BorderSide(
-                  //       color: Colors.red.withOpacity(0.5)), // 연한 빨간색 테두리
-                  // ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-                ),
-                readOnly: true,
-                // 사용자가 직접 입력하지 못하도록 설정
-                onTap: () {
-                  selectDate(context); // 달력 대화 상자를 보여줍니다.
-                  // print("@@$context");
-                },
-                style: const TextStyle(
-                  fontSize: 11, // 원하는 텍스트 크기로 설정
-                  // 다른 스타일 속성들도 여기에 추가할 수 있습니다.
-                ),
-              )),
+                    controller: dateController,
+                    decoration: InputDecoration(
+                      hintText: "$dateText",
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey.withOpacity(0.5)),
+                      ),
+                      // 포커싱 잡혔을때 노란색은 쫌;;
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                        BorderSide(color: Colors.black.withOpacity(0.5)),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                      suffixIcon: Icon(
+                          Icons.calendar_today
+                      ),
+                      suffixIconColor: Colors.grey.withOpacity(0.5),
+                    ),
+                    readOnly: true,
+                    onTap: () {
+                      _visibleController.toggleVisiblity(false);
+                      selectDate(context);
+                    },
+                    style: const TextStyle(
+                      fontSize: 11,
+                    ),
+                  )),
               const SizedBox(width: 10), // 요소 사이 간격
               DropDownBuilder(menuList: laboratoryList),
               const SizedBox(

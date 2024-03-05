@@ -43,7 +43,7 @@ class _MainPageState extends State<MainPage> {
       child: SafeArea(
         child: Container(
           padding: const EdgeInsets.all(5),
-          color: Colors.white,
+          color: Colors.blue,
           child: Row(
             children: [
               Container(

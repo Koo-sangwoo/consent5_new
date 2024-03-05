@@ -48,6 +48,7 @@ public class MainActivity extends FlutterActivity {
                                     JSONObject jsonParams = new JSONObject(params);
                                     Log.i("@@params 값 : ",  jsonParams.toString());
                                     Log.i("@@consents 값 : ",  jsonParams.toString());
+                                    Log.i("@@저장타입 : ", type);
                                     loadEFormViewByGuid(type,jsonConsents, jsonParams, context);
                                 } catch (JSONException e) {
                                     throw new RuntimeException(e);

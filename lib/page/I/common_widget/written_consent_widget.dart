@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:consent5/WebService/httpService.dart';
 import 'package:consent5/getx_controller/patient_detail_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 class WriteConsentWidget extends StatefulWidget {
@@ -8,19 +11,21 @@ class WriteConsentWidget extends StatefulWidget {
   final bool isVerticalMode;
   final Map<dynamic, dynamic> patientDetail;
 
+
   const WriteConsentWidget(
       {super.key,
       required this.isVisible,
       required this.isVerticalMode,
-      required this.patientDetail});
+      required this.patientDetail,
+      });
+
   @override
   State<WriteConsentWidget> createState() => _WriteConsentWidgetState();
 }
 
-class _WriteConsentWidgetState extends State<WriteConsentWidget> {
+class _WriteConsentWidgetState extends State<WriteConsentWidget> with WidgetsBindingObserver{
   List<bool> checkboxValues = [];
   late ValueNotifier<List<bool>> checkboxValuesNotifier;
-
   List<Map<String, dynamic>> selectedData = [];
   late Future<List<dynamic>> unfinishedInfoFuture;
   late Map<dynamic, dynamic> patientDetail;
@@ -30,12 +35,29 @@ class _WriteConsentWidgetState extends State<WriteConsentWidget> {
     super.initState();
     unfinishedInfoFuture = getUnfinishedInfo(); // 데이터 로드
     checkboxValuesNotifier = ValueNotifier([]);
+    WidgetsBinding.instance?.addObserver(this); // 생성시 위젯상태를 감지하는 옵저버 추가
   }
 
   void reloadData() {
     setState(() {
       unfinishedInfoFuture = getUnfinishedInfo(); // 데이터 재로드
     });
+  }
+  @override
+  void dispose() {
+    WidgetsBinding.instance?.removeObserver(this); // 종료시 사라짐
+    super.dispose();
+  }
+
+
+  // widgetBinding객체를 통해 외부앱 -> 업무앱 이동을 감지해서 setState실행(데이터 최신화)
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      setState(() {
+        // setState를 호출하여 화면을 다시 그립니다.
+      });
+    }
   }
 
   @override
@@ -47,27 +69,35 @@ class _WriteConsentWidgetState extends State<WriteConsentWidget> {
 
     //
     Map<dynamic, dynamic> patientInfo = detail['detail'];
+    const platform = MethodChannel('com.example.consent5/kmiPlugin');
 
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+        // padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
         alignment: Alignment.centerLeft,
         height: 250,
-        width: widget.isVerticalMode ? 380 : 350,
-        margin: const EdgeInsets.fromLTRB(5, 10, 5, 5),
+        width: widget.isVerticalMode ? 375 : 380,
+        margin: widget.isVerticalMode
+            ? const EdgeInsets.fromLTRB(5, 5, 10, 5)
+            : const EdgeInsets.fromLTRB(5, 5, 5, 10),
+        // 기존 right margin = 5;
         // color: Colors.blue,
         decoration: BoxDecoration(
-          // color: Colors.blue, // 컨테이너의 배경색
-          borderRadius: BorderRadius.circular(10.0),
-          // 테두리의 둥근 정도
-          border: Border.all(
-            color: Colors.grey, // 테두리 색상
-            width: 1.0, // 테두리 두께
-          ),
-        ),
+            // color: Colors.blue, // 컨테이너의 배경색
+            borderRadius: BorderRadius.circular(20.0),
+            // 테두리의 둥근 정도
+            color: Colors.white),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text("작성 동의서"),
-          const Divider(thickness: 2, height: 20, color: Colors.grey),
+          Container(
+              padding: EdgeInsets.fromLTRB(20, 20, 20, 5),
+              child: const Text(
+                "작성동의서",
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 17),
+              )),
+          const Divider(
+              thickness: 0.5,
+              height: 20,
+              color: Color.fromRGBO(233, 233, 233, 1)),
           Expanded(
               child: widget.isVisible
                   ? FutureBuilder(
@@ -99,23 +129,86 @@ class _WriteConsentWidgetState extends State<WriteConsentWidget> {
                                   builder: (context, values, child) {
                                     return InkWell(
                                       onTap: () {
-                                        //체크박스 갯수에 따라서 분기 처리
-                                        if (selectedData.length <= 1) {
-                                          // print(
-                                          //     '현재 클릭한 동의서 명 --- > ${data[index]['FormName']}');
-                                        } else {
-                                          // print(
-                                          //     '체크박스 체크된 데이터 --- > ${selectedData.length}');
+                                        print(
+                                            '선택한 동의서 Rid : ${data[index]['ConsentMstRid']} / 선택한 동의서 저장타입 : ${data[index]['ConsentState']}');
+                                        String consentType = 'temp';
+                                        String korConsentType = '';
+                                        // String formNames = data[index]['FormName'];
+
+                                        List<Map<String, String>> saveConsent =
+                                            [
+                                          {
+                                            'ConsentMstRid': data[index]
+                                                    ['ConsentMstRid']
+                                                .toString(),
+                                            'FormCd': data[index]['FormCd'].toString(),
+                                            'FormId': data[index]['FormId'].toString(),
+                                            'FormVersion':
+                                            data[index]['FormVersion'].toString(),
+                                            'FormRid':
+                                            data[index]['FormRid'].toString(),
+                                            'FormGuid':
+                                            data[index]['FormGuid'].toString(),
+                                          }
+                                        ];
+                                        // 환자 상세정보
+                                        Map<dynamic, dynamic> params = detail;
+
+
+                                        if (data[index]['ConsentState'] ==
+                                            'ELECTR_CMP') {
+                                          consentType = 'end';
                                         }
+
+                                        if (consentType == 'temp') {
+                                          korConsentType = '임시저장';
+                                        } else {
+                                          korConsentType = '인증저장';
+                                        }
+
+                                        showDialog(
+                                            context: context,
+                                            barrierDismissible: true,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                title: Text(
+                                                    "${korConsentType}서식 열기"),
+                                                content: Text(' 서식을 열겠습니까?'),
+                                                actions: [
+                                                  ElevatedButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                        platform.invokeMethod(
+                                                            'openEForm', {
+                                                          'type': consentType,
+                                                          'consents':
+                                                              jsonEncode(
+                                                                  saveConsent),
+                                                          'params': jsonEncode(
+                                                              params),
+                                                          // 'op': 'someOperation',
+                                                        });
+                                                      },
+                                                      child: Text('확인')),
+                                                  ElevatedButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      child: Text('취소'))
+                                                ],
+                                              );
+                                            });
                                       },
                                       child: Row(
                                         children: <Widget>[
                                           Container(
                                             margin: const EdgeInsets.fromLTRB(
-                                                0, 0, 5, 0),
+                                                20, 0, 5, 0),
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 12,
-                                                vertical: 6), // 가로 세로 패딩 조절
+                                                vertical: 4), // 가로 세로 패딩 조절
                                             decoration: BoxDecoration(
                                               color: getContainerColor(data[
                                                       index]
@@ -126,9 +219,11 @@ class _WriteConsentWidgetState extends State<WriteConsentWidget> {
                                             ),
                                             child: Text(
                                               data[index]['ConsentStateDisp'],
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 fontSize: 12,
-                                                color: Colors.white,
+                                                color: getConsentTextColor(
+                                                    data[index]
+                                                        ['ConsentStateDisp']),
                                                 fontWeight: FontWeight
                                                     .bold, // 글자 두께를 더 두껍게 설정
                                               ),
@@ -151,16 +246,16 @@ class _WriteConsentWidgetState extends State<WriteConsentWidget> {
                               },
                               separatorBuilder: (context, index) =>
                                   const Divider(
-                                color: Colors.grey,
-                                thickness: 1, // 두께를 1로 설정
+                                color: Color.fromRGBO(233, 233, 233, 1),
+                                thickness: 0.5, // 두께를 1로 설정
                                 height: 30, // 높이를 줄임
                               ),
                             );
                           } else {
-                            return const Text("조회된 자료가 없습니다.");
+                            return Center(child: const Text("조회된 자료가 없습니다."));
                           }
                         } else {
-                          return const Text("조회된 자료가 없습니다.");
+                          return Center(child: const Text("조회된 자료가 없습니다."));
                         }
                       },
                     )
@@ -173,9 +268,29 @@ class _WriteConsentWidgetState extends State<WriteConsentWidget> {
   Color getContainerColor(String consentStateDisp) {
     switch (consentStateDisp) {
       case '임시':
-        return Colors.pink.shade100;
+        return Color.fromRGBO(240, 242, 255, 1);
       case '완료':
+        return Color.fromRGBO(115, 140, 241, 1);
+      case '구두':
+        return Colors.red;
+      case '진행':
+        return Colors.pink;
+      default:
         return Colors.blue;
+    }
+  }
+
+  /**
+   * @author sangU02 <br/>
+   * @since 2024/02/29 <br/>
+   * @note 작성동의서 상태 텍스트 글자
+   */
+  Color getConsentTextColor(String consentState) {
+    switch (consentState) {
+      case '임시':
+        return Color.fromRGBO(115, 140, 241, 1);
+      case '완료':
+        return Color.fromRGBO(255, 255, 255, 1);
       case '구두':
         return Colors.red;
       case '진행':
@@ -186,7 +301,7 @@ class _WriteConsentWidgetState extends State<WriteConsentWidget> {
   }
 
   /// @author sangU02 <br/>
-  /// @since 2023/01/06 <br/>
+  /// @since 2024/01/06 <br/>
   /// @note 동의서 리스트 조회 메서드
   Future<List<dynamic>> getConsents(String patientCode) async {
     Future<List<dynamic>> consentList = makeRequest_getConsents(
