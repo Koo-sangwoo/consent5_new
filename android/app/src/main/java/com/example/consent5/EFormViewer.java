@@ -312,14 +312,13 @@ public class EFormViewer {
 
                         // 녹취 파일
                         String audiosPath = audioFileUpload(event.getAudioPath());
-                        Log.i(TAG,"녹취파일 저장경로 @@@@@@@@@@@@@@@ : " + event.getAudioPath());
-                        Log.i(TAG,"녹취파일 저장경로 @@@@@@@@@@@@@@@ : " + event.getAudioPath());
 
                         if (!event.getAudioPath().isEmpty()) {
                             if (audiosPath.equals("")) {
                                 audioUploadResult = false;
                             } else {
                                 audioUploadResult = true;
+
                             }
                         } else {
                             audioUploadResult = true;
@@ -546,13 +545,13 @@ public class EFormViewer {
                 JSONObject params = requestOptions.getJSONObject("params"); // 동의서 환자 정보와 유저 정보
                 JSONObject patientDetail = new JSONObject(requestOptions.getString("detail")); // 환자 상세 정보
 
-                paramUserId = params.getString("userId");
+                paramUserId = "01";// 기존 --> params.getString("userId");
                 paramPatientCode = patientDetail.getString("PatientCode");
                 paramPatientName = patientDetail.getString("PatientName");
 
                 Log.i(TAG, "들어온 타입 : " + type);
                 Log.i(TAG, "path : 퓨패패패" + path);
-                Log.i(TAG, "로그인 사용자 ID :" + params.getString("userId"));
+                Log.i(TAG, "로그인 사용자 ID :" + paramUserId);// 기존 --> params.getString("userId")
                 Log.i(TAG, "선택한 환자코드 :" + patientDetail.getString("PatientCode"));
                 Log.i(TAG, "consent : 퓨퓨퓨퓨" + consent.toString());
                 Log.i(TAG, "FormCd :" + consent.getString("FormCd"));
@@ -703,7 +702,7 @@ public class EFormViewer {
 
     // FOS에 저장된 녹취 파일 추가
     public String makeFosRecordFiles() {
-        String recordFilePath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + "/CLIPe-Form/CONSENT/RECORD/";
+        String recordFilePath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + "/CLIPe-Form/CONSENT/RECORD/"; // /CLIPe-Form/CONSENT/RECORD/
         Log.i(TAG, "녹취파일 불러오는 경로 : " + recordFilePath);
         File recordFolder = new File(recordFilePath);
 
@@ -856,7 +855,7 @@ public class EFormViewer {
             } else if (consent.has("ConsentName") == true) {
                 params.put("formName", consent.getString("ConsentName"));
             }
-            Log.i(TAG, "FormName : " + params.getString("formName"));
+//            Log.i(TAG, "FormName : " + params.getString("formName"));
             // 서식 버전
             params.put("formVersion", consent.getString("FormVersion"));
             // ConsentMstRid 가 있으면 임시저장
@@ -1080,11 +1079,16 @@ public class EFormViewer {
     }
 
     // 파일 업로드 경로 : 환자번호(앞에서3자리)/환자번호(4번째에서3자리)/환자번호/
-    private String getUploadPath() {
+    private String getUploadPath(){
         String path = "";
+        String patientCode = "";
+        try {
+            JSONObject params = new JSONObject(requestOptions.getString("detail")); // 환자 상세 정보;
 
-        JSONObject params = requestOptions;
-        String patientCode = "12345678";
+            patientCode = params.getString("PatientCode");
+        } catch (JSONException jsonException) {
+            jsonException.getMessage();
+        }
         // by sangU02 2024/02/28
         // 처음 patientCode.subString이 /하나가 붙어서 나오므로, 처음 /를 삭제함.
         path = patientCode.substring(0, 3) + "/" + patientCode.substring(4, 4) + "/" + patientCode + "/";    ///박승찬 환자번호 수정

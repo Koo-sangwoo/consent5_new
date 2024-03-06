@@ -24,6 +24,8 @@ class _MainPageState extends State<MainPage> {
   final bool _isClickedEmergency = false;
   String _clickedButton = '';
   late PatientDetailController _patientDetailController;
+  late VisibleController _visibleController;
+
 
   @override
   void initState() {
@@ -32,6 +34,7 @@ class _MainPageState extends State<MainPage> {
       _clickedButton = 'Inpatient';
     });
     _patientDetailController = Get.find();
+    _visibleController = Get.put(VisibleController());
   }
 
   // page_I 메소드 정의
@@ -80,7 +83,7 @@ class _MainPageState extends State<MainPage> {
             //   ),
             // ),
             appBar: AppBar(
-              backgroundColor: const Color.fromRGBO(53, 59, 85, 1),
+              backgroundColor: const Color.fromRGBO(115, 140, 243, 1),
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.center, // 가운데 정렬
                 children: <Widget>[
@@ -120,7 +123,7 @@ class _MainPageState extends State<MainPage> {
                       unselectedLabelColor: Colors.white,
                       // indicatorColor: Colors.pink.shade100,
                       indicator: BoxDecoration(
-                        color: Color.fromRGBO(115, 140, 243, 1),
+                        color: Color.fromRGBO(76, 96, 176, 1),
                         borderRadius: BorderRadius.circular(12)
                       ),
                       indicatorPadding: EdgeInsets.fromLTRB(-25, 5, -25, 5),
@@ -131,6 +134,9 @@ class _MainPageState extends State<MainPage> {
                                 text: e,
                               ))
                           .toList(),
+                      onTap: (index){
+                        _visibleController.toggleVisiblity(false);
+                      },
                     ),
                   ),
                   Padding(

@@ -11,6 +11,7 @@ import 'package:consent5/page/I/common_widget/patient_info_widget.dart';
 import 'package:consent5/page/I/common_widget/unfinished_widget.dart';
 import 'package:consent5/page/I/common_widget/written_consent_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -47,8 +48,11 @@ class _PatientIWidgetState extends State<PatientIWidget> {
 
   TextEditingController dateController = TextEditingController();
 
+  // 배터리 절전권한 관련 java 플랫폼
+  static const platform = MethodChannel('com.example.consent5/kmiPlugin');
+  
   // 상태관리 컨트롤러 최상위 위젯에서 초기화
-  final VisibleController _visibleController = Get.put(VisibleController());
+  final VisibleController _visibleController = Get.find();
 
   final SearchWordController _searchWordController =
       Get.put(SearchWordController());
@@ -56,8 +60,7 @@ class _PatientIWidgetState extends State<PatientIWidget> {
   final PatientSearchValueController _patientSearchValueController =
       Get.put(PatientSearchValueController());
 
-  final PatientDetailController _patientDetailController =
-      Get.find();
+  final PatientDetailController _patientDetailController = Get.find();
 
   // 동의서 검색 라디오 타입 변수
   int consentSearchType = 1;
@@ -129,8 +132,15 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                           // 처방 동의서 위젯
                           // Obx => 컨트롤러값의 변화를 감지하고 리빌드하는 GetX의 클래스
                           Obx(() => UnfinishedWidget(
-                              isVerticalMode: isVerticalMode,
-                              isVisible: _visibleController.isVisible.value)),
+                                isVerticalMode: isVerticalMode,
+                                isVisible: _visibleController.isVisible.value,
+                                patientDetail: {
+                                  'detail': _patientDetailController
+                                      .patientDetail['detail']!,
+                                  'params': _patientDetailController
+                                      .patientDetail['params']!,
+                                },
+                              )),
                           // 작성 동의서 위젯
                           // 위와 동일
                           Obx(() => WriteConsentWidget(
@@ -174,19 +184,13 @@ class _PatientIWidgetState extends State<PatientIWidget> {
   }
 
   Future<void> requestPermissions() async {
-    final List<Permission> permissions = [
-      Permission.camera, // 카메라 권한
-      Permission.photos, // 사진, 동영상 권한
-      Permission.microphone, // 녹음 권한
-      Permission.manageExternalStorage // 저장소 관련 권한
-    ];
-    for (var permission in permissions) {
-      if (!await permission.request().isGranted) {
-        print('${permission.toString()} 권한을 요청합니다.');
-      } else {
-        print('${permission.toString()} 권한을 이미 가지고 있습니다.');
-      }
+    try{
+      final result = await platform.invokeMethod('requestIgnoreBatteryOptimization');
+      print('배터리 절전권한 $result');
+    } on PlatformException catch (e){
+      print('망해버렸어~');
     }
+
   }
 
   @override
@@ -388,39 +392,81 @@ class _PatientIWidgetState extends State<PatientIWidget> {
               ),
               const SizedBox(width: 50),
               // 2024/02/29 by sangU02 디자인 수정
-              IconButton(
-                  visualDensity: VisualDensity(horizontal: -3, vertical: -1),
-                  // 아이콘과 텍스트 간격 조절
-                  padding: EdgeInsets.zero,
-                  icon: const Icon(Icons.search),
-                  iconSize: 33,
-                  color: Colors.grey,
-                  onPressed: () {
-                    print("@검색클릭");
-                    _patientSearchValueController.searchValueUpdate(
-                      dateController.text,
-                      wardValue,
-                      deptValue,
-                      docValue,
-                    );
-                  }),
-              SizedBox(
-                width: 10,
-              ),
-              IconButton(
-                visualDensity: VisualDensity(horizontal: -3, vertical: -1),
-                // 아이콘과 텍스트 간격 조절
-                padding: EdgeInsets.zero,
-                color: Colors.grey,
-                icon: const Icon(Icons.refresh_rounded),
-                iconSize: 33,
+              ElevatedButton(
                 onPressed: () {
-                  print("@새로고침클릭");
-                  // 설정 로직 수행
+                  // 버튼 클릭 시 실행할 작업
+                  _patientSearchValueController.searchValueUpdate(
+                    dateController.text,
+                    wardValue,
+                    deptValue,
+                    docValue,);
                 },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromRGBO(255, 255, 255, 1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    side: BorderSide(
+                      color: Color.fromRGBO(115, 140, 243, 1), // 테두리 색상
+                      width: 0.5, // 테두리 두께
+                    ),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min, // Row의 크기를 내용물 크기에 맞게 조정
+                  children: <Widget>[
+                    Icon(
+                      Icons.search,
+                      size: 33,
+                      color: Color.fromRGBO(115, 140, 243, 1),
+                    ),
+                    SizedBox(width: 4), // 아이콘과 텍스트 사이의 공간 조정
+                    Text(
+                      '검색',
+                      style: TextStyle(fontSize: 12, color: Color.fromRGBO(115, 140, 243, 1)),
+                    ),
+                  ],
+                ),
               ),
               SizedBox(
                 width: 10,
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // 버튼 클릭 시 실행할 작업
+                  setState(() {
+
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromRGBO(255, 255, 255, 1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    side: BorderSide(
+                      color: Color.fromRGBO(115, 140, 243, 1), // 테두리 색상
+                      width: 0.5, // 테두리 두께
+                    ),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min, // Row의 크기를 내용물 크기에 맞게 조정
+                  children: <Widget>[
+                    Icon(
+                      Icons.refresh,
+                      size: 33,
+                      color: Color.fromRGBO(115, 140, 243, 1),
+                    ),
+                    SizedBox(width: 4), // 아이콘과 텍스트 사이의 공간 조정
+                    Text(
+                      '초기화',
+                      style: TextStyle(fontSize: 12, color: Color.fromRGBO(115, 140, 243, 1)),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                width: 20,
               ),
             ],
           ),
@@ -537,39 +583,82 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                 ),
               ),
               const SizedBox(width: 50), // 요소 사이 간격
-              IconButton(
-                  visualDensity: VisualDensity(horizontal: -3, vertical: -1),
-                  // 아이콘과 텍스트 간격 조절
-                  padding: EdgeInsets.zero,
-                  icon: const Icon(Icons.search),
-                  iconSize: 33,
-                  color: Colors.grey,
-                  onPressed: () {
-                    print("@검색클릭");
-                    _patientSearchValueController.searchValueUpdate(
-                      dateController.text,
-                      wardValue,
-                      deptValue,
-                      docValue,
-                    );
-                  }),
-              SizedBox(
-                width: 10,
-              ),
-              IconButton(
-                visualDensity: VisualDensity(horizontal: -3, vertical: -1),
-                // 아이콘과 텍스트 간격 조절
-                padding: EdgeInsets.zero,
-                color: Colors.grey,
-                icon: const Icon(Icons.refresh_rounded),
-                iconSize: 33,
+              // 2024/02/29 by sangU02 디자인 수정
+              ElevatedButton(
                 onPressed: () {
-                  print("@새로고침클릭");
-                  // 설정 로직 수행
+                  // 버튼 클릭 시 실행할 작업
+                  _patientSearchValueController.searchValueUpdate(
+                    dateController.text,
+                    wardValue,
+                    deptValue,
+                    docValue,);
                 },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromRGBO(255, 255, 255, 1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    side: BorderSide(
+                      color: Color.fromRGBO(115, 140, 243, 1), // 테두리 색상
+                      width: 0.5, // 테두리 두께
+                    ),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min, // Row의 크기를 내용물 크기에 맞게 조정
+                  children: <Widget>[
+                    Icon(
+                      Icons.search,
+                      size: 33,
+                      color: Color.fromRGBO(115, 140, 243, 1),
+                    ),
+                    SizedBox(width: 4), // 아이콘과 텍스트 사이의 공간 조정
+                    Text(
+                      '검색',
+                      style: TextStyle(fontSize: 12, color: Color.fromRGBO(115, 140, 243, 1)),
+                    ),
+                  ],
+                ),
               ),
               SizedBox(
                 width: 10,
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // 버튼 클릭 시 실행할 작업
+                  setState(() {
+
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromRGBO(255, 255, 255, 1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    side: BorderSide(
+                      color: Color.fromRGBO(115, 140, 243, 1), // 테두리 색상
+                      width: 0.5, // 테두리 두께
+                    ),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min, // Row의 크기를 내용물 크기에 맞게 조정
+                  children: <Widget>[
+                    Icon(
+                      Icons.refresh,
+                      size: 33,
+                      color: Color.fromRGBO(115, 140, 243, 1),
+                    ),
+                    SizedBox(width: 4), // 아이콘과 텍스트 사이의 공간 조정
+                    Text(
+                      '초기화',
+                      style: TextStyle(fontSize: 12, color: Color.fromRGBO(115, 140, 243, 1)),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                width: 20,
               ),
               // Text(_isListening ? '녹음 중...' : ''),
             ],
@@ -597,8 +686,7 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                   ),
                   // 포커싱 잡혔을때 노란색은 쫌;;
                   focusedBorder: OutlineInputBorder(
-                    borderSide:
-                        BorderSide(color: Colors.grey.withOpacity(0.5)),
+                    borderSide: BorderSide(color: Colors.grey.withOpacity(0.5)),
                   ),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 10),
                   suffixIcon: Icon(Icons.calendar_today),
@@ -620,39 +708,82 @@ class _PatientIWidgetState extends State<PatientIWidget> {
               ),
               DropDownBuilder(menuList: docList),
               const SizedBox(width: 50), // 요소 사이 간격
-              IconButton(
-                  visualDensity: VisualDensity(horizontal: -3, vertical: -1),
-                  // 아이콘과 텍스트 간격 조절
-                  padding: EdgeInsets.zero,
-                  icon: const Icon(Icons.search),
-                  iconSize: 33,
-                  color: Colors.grey,
-                  onPressed: () {
-                    print("@검색클릭");
-                    _patientSearchValueController.searchValueUpdate(
-                      dateController.text,
-                      wardValue,
-                      deptValue,
-                      docValue,
-                    );
-                  }),
-              SizedBox(
-                width: 10,
-              ),
-              IconButton(
-                visualDensity: VisualDensity(horizontal: -3, vertical: -1),
-                // 아이콘과 텍스트 간격 조절
-                padding: EdgeInsets.zero,
-                color: Colors.grey,
-                icon: const Icon(Icons.refresh_rounded),
-                iconSize: 33,
+              // 2024/02/29 by sangU02 디자인 수정
+              ElevatedButton(
                 onPressed: () {
-                  print("@새로고침클릭");
-                  // 설정 로직 수행
+                  // 버튼 클릭 시 실행할 작업
+                  _patientSearchValueController.searchValueUpdate(
+                    dateController.text,
+                    wardValue,
+                    deptValue,
+                    docValue,);
                 },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromRGBO(255, 255, 255, 1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    side: BorderSide(
+                      color: Color.fromRGBO(115, 140, 243, 1), // 테두리 색상
+                      width: 0.5, // 테두리 두께
+                    ),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min, // Row의 크기를 내용물 크기에 맞게 조정
+                  children: <Widget>[
+                    Icon(
+                      Icons.search,
+                      size: 33,
+                      color: Color.fromRGBO(115, 140, 243, 1),
+                    ),
+                    SizedBox(width: 4), // 아이콘과 텍스트 사이의 공간 조정
+                    Text(
+                      '검색',
+                      style: TextStyle(fontSize: 12, color: Color.fromRGBO(115, 140, 243, 1)),
+                    ),
+                  ],
+                ),
               ),
               SizedBox(
                 width: 10,
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // 버튼 클릭 시 실행할 작업
+                  setState(() {
+
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromRGBO(255, 255, 255, 1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    side: BorderSide(
+                      color: Color.fromRGBO(115, 140, 243, 1), // 테두리 색상
+                      width: 0.5, // 테두리 두께
+                    ),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min, // Row의 크기를 내용물 크기에 맞게 조정
+                  children: <Widget>[
+                    Icon(
+                      Icons.refresh,
+                      size: 33,
+                      color: Color.fromRGBO(115, 140, 243, 1),
+                    ),
+                    SizedBox(width: 4), // 아이콘과 텍스트 사이의 공간 조정
+                    Text(
+                      '초기화',
+                      style: TextStyle(fontSize: 12, color: Color.fromRGBO(115, 140, 243, 1)),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                width: 20,
               ),
             ],
           ),
@@ -702,35 +833,84 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                 width: 10,
               ),
               DropDownBuilder(menuList: docList),
-              const SizedBox(width: 10), // 요소 사이 간격
+              const SizedBox(width: 50), // 요소 사이 간격
+              // 2024/02/29 by sangU02 디자인 수정
               ElevatedButton(
-                // 바코드 스캔 버튼
-                onPressed: () {},
+                onPressed: () {
+                  // 버튼 클릭 시 실행할 작업
+                  _patientSearchValueController.searchValueUpdate(
+                    dateController.text,
+                    wardValue,
+                    deptValue,
+                    docValue,);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromRGBO(255, 255, 255, 1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    side: BorderSide(
+                      color: Color.fromRGBO(115, 140, 243, 1), // 테두리 색상
+                      width: 0.5, // 테두리 두께
+                    ),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                ),
                 child: Row(
-                  mainAxisSize: MainAxisSize.min, // 아이콘과 텍스트를 버튼 내부 중앙에 위치시킴
-                  children: const [
-                    Icon(Icons.search), // 아이콘
-                    SizedBox(width: 8), // 아이콘과 텍스트 사이의 간격
-                    Text('검색'), // 텍스트 추가
+                  mainAxisSize: MainAxisSize.min, // Row의 크기를 내용물 크기에 맞게 조정
+                  children: <Widget>[
+                    Icon(
+                      Icons.search,
+                      size: 33,
+                      color: Color.fromRGBO(115, 140, 243, 1),
+                    ),
+                    SizedBox(width: 4), // 아이콘과 텍스트 사이의 공간 조정
+                    Text(
+                      '검색',
+                      style: TextStyle(fontSize: 12, color: Color.fromRGBO(115, 140, 243, 1)),
+                    ),
                   ],
                 ),
-                style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
-                  // 아이콘 색상을 검은색으로 지정
-                  foregroundColor:
-                      MaterialStateProperty.all<Color>(Colors.black),
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // 버튼 클릭 시 실행할 작업
+                  setState(() {
+
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromRGBO(255, 255, 255, 1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    side: BorderSide(
+                      color: Color.fromRGBO(115, 140, 243, 1), // 테두리 색상
+                      width: 0.5, // 테두리 두께
+                    ),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min, // Row의 크기를 내용물 크기에 맞게 조정
+                  children: <Widget>[
+                    Icon(
+                      Icons.refresh,
+                      size: 33,
+                      color: Color.fromRGBO(115, 140, 243, 1),
+                    ),
+                    SizedBox(width: 4), // 아이콘과 텍스트 사이의 공간 조정
+                    Text(
+                      '초기화',
+                      style: TextStyle(fontSize: 12, color: Color.fromRGBO(115, 140, 243, 1)),
+                    ),
+                  ],
                 ),
               ),
-
-              IconButton(
-                icon: const Icon(Icons.refresh_rounded),
-                onPressed: () {
-                  print("@새로고침클릭");
-                  // 설정 로직 수행
-                },
+              SizedBox(
+                width: 20,
               ),
-              // Text(_isListening ? '녹음 중...' : ''),
             ],
           ),
         );
@@ -747,32 +927,30 @@ class _PatientIWidgetState extends State<PatientIWidget> {
               ),
               Expanded(
                   child: TextField(
-                    controller: dateController,
-                    decoration: InputDecoration(
-                      hintText: "$dateText",
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey.withOpacity(0.5)),
-                      ),
-                      // 포커싱 잡혔을때 노란색은 쫌;;
-                      focusedBorder: OutlineInputBorder(
-                        borderSide:
+                controller: dateController,
+                decoration: InputDecoration(
+                  hintText: "$dateText",
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey.withOpacity(0.5)),
+                  ),
+                  // 포커싱 잡혔을때 노란색은 쫌;;
+                  focusedBorder: OutlineInputBorder(
+                    borderSide:
                         BorderSide(color: Colors.black.withOpacity(0.5)),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-                      suffixIcon: Icon(
-                          Icons.calendar_today
-                      ),
-                      suffixIconColor: Colors.grey.withOpacity(0.5),
-                    ),
-                    readOnly: true,
-                    onTap: () {
-                      _visibleController.toggleVisiblity(false);
-                      selectDate(context);
-                    },
-                    style: const TextStyle(
-                      fontSize: 11,
-                    ),
-                  )),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                  suffixIcon: Icon(Icons.calendar_today),
+                  suffixIconColor: Colors.grey.withOpacity(0.5),
+                ),
+                readOnly: true,
+                onTap: () {
+                  _visibleController.toggleVisiblity(false);
+                  selectDate(context);
+                },
+                style: const TextStyle(
+                  fontSize: 11,
+                ),
+              )),
               const SizedBox(width: 10), // 요소 사이 간격
               DropDownBuilder(menuList: laboratoryList),
               const SizedBox(
@@ -780,34 +958,83 @@ class _PatientIWidgetState extends State<PatientIWidget> {
               ),
               DropDownBuilder(menuList: laboratoryList2),
               const SizedBox(width: 10), // 요소 사이 간격
+              // 2024/02/29 by sangU02 디자인 수정
               ElevatedButton(
-                // 바코드 스캔 버튼
-                onPressed: () {},
+                onPressed: () {
+                  // 버튼 클릭 시 실행할 작업
+                  _patientSearchValueController.searchValueUpdate(
+                    dateController.text,
+                    wardValue,
+                    deptValue,
+                    docValue,);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromRGBO(255, 255, 255, 1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    side: BorderSide(
+                      color: Color.fromRGBO(115, 140, 243, 1), // 테두리 색상
+                      width: 0.5, // 테두리 두께
+                    ),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                ),
                 child: Row(
-                  mainAxisSize: MainAxisSize.min, // 아이콘과 텍스트를 버튼 내부 중앙에 위치시킴
-                  children: const [
-                    Icon(Icons.search), // 아이콘
-                    SizedBox(width: 8), // 아이콘과 텍스트 사이의 간격
-                    Text('검색'), // 텍스트 추가
+                  mainAxisSize: MainAxisSize.min, // Row의 크기를 내용물 크기에 맞게 조정
+                  children: <Widget>[
+                    Icon(
+                      Icons.search,
+                      size: 33,
+                      color: Color.fromRGBO(115, 140, 243, 1),
+                    ),
+                    SizedBox(width: 4), // 아이콘과 텍스트 사이의 공간 조정
+                    Text(
+                      '검색',
+                      style: TextStyle(fontSize: 12, color: Color.fromRGBO(115, 140, 243, 1)),
+                    ),
                   ],
                 ),
-                style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
-                  // 아이콘 색상을 검은색으로 지정
-                  foregroundColor:
-                      MaterialStateProperty.all<Color>(Colors.black),
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // 버튼 클릭 시 실행할 작업
+                  setState(() {
+
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromRGBO(255, 255, 255, 1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    side: BorderSide(
+                      color: Color.fromRGBO(115, 140, 243, 1), // 테두리 색상
+                      width: 0.5, // 테두리 두께
+                    ),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min, // Row의 크기를 내용물 크기에 맞게 조정
+                  children: <Widget>[
+                    Icon(
+                      Icons.refresh,
+                      size: 33,
+                      color: Color.fromRGBO(115, 140, 243, 1),
+                    ),
+                    SizedBox(width: 4), // 아이콘과 텍스트 사이의 공간 조정
+                    Text(
+                      '초기화',
+                      style: TextStyle(fontSize: 12, color: Color.fromRGBO(115, 140, 243, 1)),
+                    ),
+                  ],
                 ),
               ),
-
-              IconButton(
-                icon: const Icon(Icons.refresh_rounded),
-                onPressed: () {
-                  print("@새로고침클릭");
-                  // 설정 로직 수행
-                },
+              SizedBox(
+                width: 20,
               ),
-              // Text(_isListening ? '녹음 중...' : ''),
             ],
           ),
         );

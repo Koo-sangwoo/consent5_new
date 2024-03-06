@@ -1,7 +1,11 @@
 package com.example.consent5;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
+import android.provider.Settings;
 
 import androidx.annotation.NonNull;
 
@@ -52,13 +56,26 @@ public class MainActivity extends FlutterActivity {
                                     loadEFormViewByGuid(type,jsonConsents, jsonParams, context);
                                 } catch (JSONException e) {
                                     throw new RuntimeException(e);
-                                }
-
-
-                                // 여기서 네이티브 메서드 호출
+                                }// 여기서 네이티브 메서드 호출
+                            }else if(call.method.equals("requestIgnoreBatteryOptimization")){
+                                requestIgnoreBatteryOptimization();
+                                result.success("Requested Successfully");
                             }
                         }
                 );
+    }
+
+    // by sangU02 2024/03/06
+    // 배터리 절전권한 요청은 플랫폼마다 다르므로 네이티브에서 요청해야함
+    //
+    private void requestIgnoreBatteryOptimization() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            String packageName = getPackageName();
+            Intent intent = new Intent();
+            intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+            intent.setData(Uri.parse("package:" + getPackageName()));
+            startActivity(intent);
+        }
     }
 
     // e-from viewer 플러그인

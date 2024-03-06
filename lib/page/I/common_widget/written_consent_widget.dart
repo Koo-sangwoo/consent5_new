@@ -11,19 +11,19 @@ class WriteConsentWidget extends StatefulWidget {
   final bool isVerticalMode;
   final Map<dynamic, dynamic> patientDetail;
 
-
-  const WriteConsentWidget(
-      {super.key,
-      required this.isVisible,
-      required this.isVerticalMode,
-      required this.patientDetail,
-      });
+  const WriteConsentWidget({
+    super.key,
+    required this.isVisible,
+    required this.isVerticalMode,
+    required this.patientDetail,
+  });
 
   @override
   State<WriteConsentWidget> createState() => _WriteConsentWidgetState();
 }
 
-class _WriteConsentWidgetState extends State<WriteConsentWidget> with WidgetsBindingObserver{
+class _WriteConsentWidgetState extends State<WriteConsentWidget>
+    with WidgetsBindingObserver {
   List<bool> checkboxValues = [];
   late ValueNotifier<List<bool>> checkboxValuesNotifier;
   List<Map<String, dynamic>> selectedData = [];
@@ -43,12 +43,12 @@ class _WriteConsentWidgetState extends State<WriteConsentWidget> with WidgetsBin
       unfinishedInfoFuture = getUnfinishedInfo(); // 데이터 재로드
     });
   }
+
   @override
   void dispose() {
     WidgetsBinding.instance?.removeObserver(this); // 종료시 사라짐
     super.dispose();
   }
-
 
   // widgetBinding객체를 통해 외부앱 -> 업무앱 이동을 감지해서 setState실행(데이터 최신화)
   @override
@@ -86,7 +86,15 @@ class _WriteConsentWidgetState extends State<WriteConsentWidget> with WidgetsBin
             // color: Colors.blue, // 컨테이너의 배경색
             borderRadius: BorderRadius.circular(20.0),
             // 테두리의 둥근 정도
-            color: Colors.white),
+            color: Colors.white,
+            boxShadow: const [
+              BoxShadow(
+                color: Color.fromRGBO(0, 0, 0, 0.1),
+                spreadRadius: 3,
+                blurRadius: 30,
+              )
+            ]),
+
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Container(
               padding: EdgeInsets.fromLTRB(20, 20, 20, 5),
@@ -142,19 +150,21 @@ class _WriteConsentWidgetState extends State<WriteConsentWidget> with WidgetsBin
                                             'ConsentMstRid': data[index]
                                                     ['ConsentMstRid']
                                                 .toString(),
-                                            'FormCd': data[index]['FormCd'].toString(),
-                                            'FormId': data[index]['FormId'].toString(),
-                                            'FormVersion':
-                                            data[index]['FormVersion'].toString(),
-                                            'FormRid':
-                                            data[index]['FormRid'].toString(),
-                                            'FormGuid':
-                                            data[index]['FormGuid'].toString(),
+                                            'FormCd': data[index]['FormCd']
+                                                .toString(),
+                                            'FormId': data[index]['FormId']
+                                                .toString(),
+                                            'FormVersion': data[index]
+                                                    ['FormVersion']
+                                                .toString(),
+                                            'FormRid': data[index]['FormRid']
+                                                .toString(),
+                                            'FormGuid': data[index]['FormGuid']
+                                                .toString(),
                                           }
                                         ];
                                         // 환자 상세정보
                                         Map<dynamic, dynamic> params = detail;
-
 
                                         if (data[index]['ConsentState'] ==
                                             'ELECTR_CMP') {
@@ -172,9 +182,8 @@ class _WriteConsentWidgetState extends State<WriteConsentWidget> with WidgetsBin
                                             barrierDismissible: true,
                                             builder: (BuildContext context) {
                                               return AlertDialog(
-                                                title: Text(
-                                                    "${korConsentType} 서식 열기"),
-                                                content: Text('${data[index]['ConsentName']} 서식을 열겠습니까?'),
+                                                content: Text(
+                                                    '${data[index]['ConsentName']} 서식을 열겠습니까?'),
                                                 actions: [
                                                   ElevatedButton(
                                                       onPressed: () {
@@ -270,14 +279,14 @@ class _WriteConsentWidgetState extends State<WriteConsentWidget> with WidgetsBin
     switch (consentStateDisp) {
       case '임시':
         return Color.fromRGBO(240, 242, 255, 1);
-      case '완료':
-        return Color.fromRGBO(115, 140, 241, 1);
-      case '구두':
-        return Colors.red;
+      case '응급':
+        return Color.fromRGBO(255, 240, 240, 1);
       case '진행':
-        return Colors.pink;
-      default:
-        return Colors.blue;
+        return Color.fromRGBO(227, 249, 246, 1);
+      case '구두':
+        return Color.fromRGBO(255, 243, 225, 1);
+      default: // 완료
+        return Color.fromRGBO(244, 239, 255, 1);
     }
   }
 
@@ -290,14 +299,14 @@ class _WriteConsentWidgetState extends State<WriteConsentWidget> with WidgetsBin
     switch (consentState) {
       case '임시':
         return Color.fromRGBO(115, 140, 241, 1);
-      case '완료':
-        return Color.fromRGBO(255, 255, 255, 1);
-      case '구두':
-        return Colors.red;
+      case '응급':
+        return Color.fromRGBO(235, 133, 133, 1);
       case '진행':
-        return Colors.pink;
-      default:
-        return Colors.blue;
+        return Color.fromRGBO(81, 203, 188, 1);
+      case '구두':
+        return Color.fromRGBO(253, 170, 46, 1);
+      default: // 완료
+        return Color.fromRGBO(167, 129, 248, 1);
     }
   }
 

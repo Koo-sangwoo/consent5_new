@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'MainPage.dart';
 import 'package:get/get.dart';
 import '../Webservice/httpService.dart';
@@ -36,6 +37,7 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
     result = <String, dynamic>{};
     myFocusNode = FocusNode();
+    requestPermissions();
   }
 
   @override
@@ -328,6 +330,19 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ));
   }
+}
+
+void requestPermissions() async{
+  final Map<Permission,PermissionStatus> permissions = await [
+  Permission.camera, // 카메라 권한
+      Permission.photos, // 사진, 동영상 권한
+  Permission.microphone, // 녹음 권한
+  Permission.manageExternalStorage,// 저장소 관련 권한
+  ].request();
+
+
+
+  print('권한 요청 상태 ${permissions.toString()}');
 }
 
 // Future<Map<String, dynamic>?> someFunction() async {

@@ -100,8 +100,10 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
     const platform = MethodChannel('com.example.consent5/kmiPlugin');
     return Expanded(
       child: Container(
+        // 검색 동의서 전체를 감싸는 위젯
         padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-        margin: const EdgeInsets.fromLTRB(0, 0, 0, 0), // 기존 left margin = 5
+        margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+        // 기존 left margin = 5
         // 하단 마진 30으로 설정
         alignment: Alignment.centerLeft,
         decoration: BoxDecoration(
@@ -114,17 +116,69 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Container( // 검색창 및 라디오박스
+            Container(
+              // 검색창 및 라디오박스
               margin: const EdgeInsets.fromLTRB(15, 20, 0, 0),
               child: const Text("동의서 검색",
                   style:
                       TextStyle(fontSize: 17.0, fontWeight: FontWeight.w600)),
             ),
-            consentSearchTypeWidget(consentSearchType, (int newValue) {
-              setState(() {
-                this.consentSearchType = newValue;
-              });
-            }),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                consentSearchTypeWidget(consentSearchType, (int newValue) {
+                  setState(() {
+                    this.consentSearchType = newValue;
+                  });
+                }),
+                Container(
+                  margin: EdgeInsets.fromLTRB(0, 0, 20, 10),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_speechToText.isNotListening) {
+                        // 만약 현재 speech-to-text가 중단된 상태라면 시작
+                        print('녹음시작');
+                        _startListening();
+                      } else {
+                        // 만약 현재 speech-to-text가 작동 중이라면 중지
+                        print('녹음 중지');
+                        _stopListening();
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8), // 버튼 패딩 조정
+                      backgroundColor: _isListening ? Color.fromRGBO(115, 140, 243, 1) : Color.fromRGBO(255, 255, 255, 1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30.0), // 테두리의 둥근 정도를 설정
+                        side: BorderSide(
+                          color: _isListening ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(115, 140, 243, 1), // 테두리 색상
+                          width: 0.5, // 테두리 두께
+                        ),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min, // Row의 크기를 내용물 크기에 맞게 조정
+                      children: <Widget>[
+                        Icon(
+                          _isListening ? Icons.mic_off : Icons.mic,
+                          size: 25, // 아이콘 크기 조정
+                          color: _isListening ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(115, 140, 243, 1),
+                        ),
+                        SizedBox(width: 4), // 아이콘과 텍스트 사이의 간격 조정
+                        Text(
+                          'AI',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: _isListening ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(115, 140, 243, 1),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+              ],
+            ),
             Padding(
               padding: const EdgeInsets.fromLTRB(15, 0, 20, 0),
               child: Row(
@@ -163,11 +217,11 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                           style: TextStyle(fontSize: 12.0),
                         ),
                         Container(
-                          margin: EdgeInsets.only(
-                              left: 0.0), // TextField와 버튼 사이의 간격 조정
+                          margin:
+                              EdgeInsets.only(left: 0.0), // TextField와 버튼 사이의 간격 조정
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10.0),
-                            color: Colors.blue,
+                            color: Color.fromRGBO(115, 140, 243, 1),
                             border: Border.all(
                               color: Colors.white,
                               //width: 4.0,
@@ -188,43 +242,14 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                       ],
                     ),
                   ),
-                  Container(
-                    // ElevatedButton.icon을 위한 Container 추가
-                    margin:
-                        EdgeInsets.only(left: 8.0), // 검색 버튼과 AI 버튼 사이의 간격 조정
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        if (_speechToText.isNotListening) {
-                          // 만약 현재 speech-to-text가 중단된 상태라면 시작
-                          print('녹음시작');
-                          _startListening();
-                        } else {
-                          print('녹음 중지');
-                          // 만약 현재 speech-to-text가 작동 중이라면 중지
-                          _stopListening();
-                        }
-                      },
-                      icon: Icon(
-                        _isListening ? Icons.mic_off : Icons.mic,
-                        size: 20, // 아이콘 크기 조정
-                      ),
-                      label: Text(
-                        'AI',
-                        style: TextStyle(
-                          fontSize: 14, // 텍스트 크기 조정
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 8), // 버튼 패딩 조정
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
-            const Divider(thickness: 0.5, height: 20, color : Color.fromRGBO(208, 214, 217, 1),
-    ), // 차선책 Color.fromRGBO(208, 214, 217, 1)
+            const Divider(
+              thickness: 0.5,
+              height: 20,
+              color: Color.fromRGBO(208, 214, 217, 1),
+            ), // 차선책 Color.fromRGBO(208, 214, 217, 1)
             Expanded(
                 child: widget.isVisible
                     ? FutureBuilder(
@@ -307,6 +332,8 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                                           });
                                           print(
                                               '다중서식 정보 : ${consents.toString()}');
+                                          // print('다중 서식 0번 인덱스값 ${consents[0].toString()}');
+                                          // print('0번 인덱스 FormName ${consents[0]['FormName']}');
                                         }
 
                                         Map<dynamic, dynamic> params =
@@ -317,34 +344,49 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                                             "JSON 변형값 consents : ${jsonEncode(consents)}, params : ${jsonEncode(params)}");
 
                                         String formNames = '';
-                                        if(selectedData.length == 0){
+                                        if (selectedData.length < 2) { // 체크박스가 하나만 체크되었거나, 하나도체크가되지않았을때
                                           formNames = data[index]['FormName'];
-                                        }else{
-                                          for(Map<String,dynamic> formName in selectedData){
-                                            formNames += formNames == '' ? formName['FormName'] : ', ${formName['FormName']}';
+                                        } else {
+                                          for(int i = 0; i < 2; i++){
+                                            if(i == 0){
+                                              formNames = consents[0]['FormName']!;
+                                            }else{
+                                              formNames += '외 ${consents.length-1}개의 ';
+                                            }
                                           }
                                         }
 
                                         // 신규 동의서 열기 / 파라미터 전달
-                                        showDialog(context: context, barrierDismissible: true,
-                                            builder: (BuildContext context){
+                                        showDialog(
+                                            context: context,
+                                            barrierDismissible: true,
+                                            builder: (BuildContext context) {
                                               return AlertDialog(
-                                                title: Text("서식 오픈 여부"),
-                                                content: Text('${formNames} 서식을 열겠습니까?'),
+                                                content: Text(
+                                                    '${formNames} 서식을 열겠습니까?'),
                                                 actions: [
-                                                  ElevatedButton(onPressed: (){
-                                                    Navigator.of(context).pop();
-                                                    platform.invokeMethod('openEForm', {
-                                                      'type': 'new',
-                                                      'consents': jsonEncode(consents),
-                                                      'params': jsonEncode(params),
-                                                      // 'op': 'someOperation',
-                                                    });
-                                                  }, child: Text('확인'))
-                                                  ,
-                                                  ElevatedButton(onPressed: (){
-                                                    Navigator.of(context).pop();
-                                                  },child: Text('취소'))
+                                                  ElevatedButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                        platform.invokeMethod(
+                                                            'openEForm', {
+                                                          'type': 'new',
+                                                          'consents':
+                                                              jsonEncode(
+                                                                  consents),
+                                                          'params': jsonEncode(
+                                                              params),
+                                                          // 'op': 'someOperation',
+                                                        });
+                                                      },
+                                                      child: Text('확인')),
+                                                  ElevatedButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      child: Text('취소'))
                                                 ],
                                               );
                                             });
@@ -358,14 +400,19 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                                         }
                                       },
                                       child: Container(
-                                        margin: EdgeInsets.fromLTRB(15, 0, 0, 0),
+                                        margin:
+                                            EdgeInsets.fromLTRB(15, 0, 0, 0),
                                         child: Row(
                                           children: <Widget>[
                                             Text('${index + 1}.'), // sangu123
                                             Checkbox(
                                               value: values[index],
-                                              visualDensity: VisualDensity(vertical: 1, horizontal: -4), // 크기 조절
-                                              side: BorderSide(width: 1, color: Colors.grey.shade400),
+                                              visualDensity: VisualDensity(
+                                                  vertical: 1, horizontal: -4),
+                                              // 크기 조절
+                                              side: BorderSide(
+                                                  width: 1,
+                                                  color: Colors.grey.shade400),
                                               onChanged: (bool? newValue) {
                                                 var newValues =
                                                     List<bool>.from(values);
@@ -411,7 +458,8 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                                                           right: 30),
                                                       onPressed: () {
                                                         String formId =
-                                                            data[index]['FormId']
+                                                            data[index]
+                                                                    ['FormId']
                                                                 .toString();
                                                         print("@@아이콘 버튼 클릭");
                                                         print(
@@ -451,8 +499,8 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                                                               color:
                                                                   Colors.yellow,
                                                             )
-                                                          : Icon(
-                                                              Icons.star_border))
+                                                          : Icon(Icons
+                                                              .star_border))
                                                 ],
                                               ),
                                             ),
@@ -468,7 +516,6 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                                 color: Color.fromRGBO(233, 233, 233, 1),
                                 thickness: 0.5, // 두께를 1로 설정
                                 height: 0, // 높이를 줄임
-
                               ),
                             );
                           } else {
@@ -503,8 +550,8 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
       margin: const EdgeInsets.fromLTRB(5, 10, 5, 10),
       alignment: Alignment.center,
       decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(32.0),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(32.0),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -514,11 +561,62 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
             child: const Text("동의서 검색",
                 style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w700)),
           ),
-          consentSearchTypeWidget(consentSearchType, (int newValue) {
-            setState(() {
-              this.consentSearchType = newValue;
-            });
-          }),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              consentSearchTypeWidget(consentSearchType, (int newValue) {
+                setState(() {
+                  this.consentSearchType = newValue;
+                });
+              }),
+              Container(
+                margin: EdgeInsets.fromLTRB(0, 0, 20, 10),
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (_speechToText.isNotListening) {
+                      // 만약 현재 speech-to-text가 중단된 상태라면 시작
+                      print('녹음시작');
+                      _startListening();
+                    } else {
+                      // 만약 현재 speech-to-text가 작동 중이라면 중지
+                      print('녹음 중지');
+                      _stopListening();
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8), // 버튼 패딩 조정
+                    backgroundColor: _isListening ? Color.fromRGBO(115, 140, 243, 1) : Color.fromRGBO(255, 255, 255, 1),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0), // 테두리의 둥근 정도를 설정
+                      side: BorderSide(
+                        color: _isListening ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(115, 140, 243, 1), // 테두리 색상
+                        width: 0.5, // 테두리 두께
+                      ),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min, // Row의 크기를 내용물 크기에 맞게 조정
+                    children: <Widget>[
+                      Icon(
+                        _isListening ? Icons.mic_off : Icons.mic,
+                        size: 25, // 아이콘 크기 조정
+                        color: _isListening ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(115, 140, 243, 1),
+                      ),
+                      SizedBox(width: 4), // 아이콘과 텍스트 사이의 간격 조정
+                      Text(
+                        'AI',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: _isListening ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(115, 140, 243, 1),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+            ],
+          ),
           Padding(
             padding: const EdgeInsets.fromLTRB(10, 0, 20, 0),
             child: Row(
@@ -529,6 +627,7 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                         Alignment.centerRight, // Stack 내부의 정렬 방향을 오른쪽 중앙으로 설정
                     children: <Widget>[
                       TextField(
+                        controller: _textFieldEditingController,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderSide: BorderSide.none,
@@ -571,42 +670,13 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                     ],
                   ),
                 ),
-                Container(
-                  // ElevatedButton.icon을 위한 Container 추가
-                  margin: EdgeInsets.only(left: 8.0),
-                  // 검색 버튼과 AI 버튼 사이의 간격 조정
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      if (_speechToText.isNotListening) {
-                        // 만약 현재 speech-to-text가 중단된 상태라면 시작
-                        print('녹음시작');
-                        _startListening();
-                      } else {
-                        print('녹음 중지');
-                        // 만약 현재 speech-to-text가 작동 중이라면 중지
-                        _stopListening();
-                      }
-                    },
-                    icon: Icon(
-                      _isListening ? Icons.mic_off : Icons.mic,
-                      size: 20, // 아이콘 크기 조정
-                    ),
-                    label: Text(
-                      'AI',
-                      style: TextStyle(
-                        fontSize: 14, // 텍스트 크기 조정
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 8), // 버튼 패딩 조정
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
-          const Divider(thickness: 0.5 , height: 20,color: Color.fromRGBO(208, 214, 217, 1)),
+          const Divider(
+              thickness: 0.5,
+              height: 20,
+              color: Color.fromRGBO(208, 214, 217, 1)),
           Expanded(
               child: widget.isVisible
                   ? FutureBuilder(
@@ -677,9 +747,6 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                                                 data['FormGuid'].toString(),
                                             'FormName':
                                                 data['FormName'].toString(),
-                                            'ConsentMstRid': data[index]
-                                            ['ConsentMstRid']
-                                                .toString(),
                                           };
                                           consents.add(consentMap);
                                         });
@@ -692,39 +759,55 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                                               .patientDetail.value;
 
                                       String formNames = '';
-                                      if(selectedData.length == 0){
+                                      if (selectedData.length < 2) { // 체크박스가 하나만 체크되었거나, 하나도체크가되지않았을때
                                         formNames = data[index]['FormName'];
-                                      }else{
-                                        for(Map<String,dynamic> formName in selectedData){
-                                          formNames += formName['FormName'];
+                                      } else {
+                                        for(int i = 0; i < 2; i++){
+                                          if(i == 0){
+                                            formNames = consents[0]['FormName']!;
+                                          }else{
+                                            formNames += '외 ${consents.length-1}개의 ';
+                                          }
                                         }
                                       }
+
                                       print(
                                           "JSON 변형값 consents : ${jsonEncode(consents)}, params : ${jsonEncode(params)}");
 
                                       // 서식 오픈 여부를 결정하는 alert 창
-                                      showDialog(context: context, barrierDismissible: true,
-                                          builder: (BuildContext context){
-                                        return AlertDialog(
-                                          title: Text("서식 오픈 여부"),
-                                          content: Text('${formNames} 서식을 열겠습니까?'),
-                                          actions: [
-                                            ElevatedButton(onPressed: (){
-                                              Navigator.of(context).pop();
-                                              platform.invokeMethod('openEForm', {
-                                                'type': 'new',
-                                                'consents': jsonEncode(consents),
-                                                'params': jsonEncode(params),
-                                                // 'op': 'someOperation',
-                                              });
-                                            }, child: Text('확인'))
-                                            ,
-                                            ElevatedButton(onPressed: (){
-                                              Navigator.of(context).pop();
-                                            },child: Text('취소'))
-                                          ],
-                                        );
-                                      });
+                                      showDialog(
+                                          context: context,
+                                          barrierDismissible: true,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: Text("서식 오픈 여부"),
+                                              content: Text(
+                                                  '${formNames} 서식을 열겠습니까?'),
+                                              actions: [
+                                                ElevatedButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                      platform.invokeMethod(
+                                                          'openEForm', {
+                                                        'type': 'new',
+                                                        'consents': jsonEncode(
+                                                            consents),
+                                                        'params':
+                                                            jsonEncode(params),
+                                                        // 'op': 'someOperation',
+                                                      });
+                                                    },
+                                                    child: Text('확인')),
+                                                ElevatedButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                    child: Text('취소'))
+                                              ],
+                                            );
+                                          });
                                       // 신규 동의서 열기 / 파라미터 전달
 
                                       //체크박스 갯수에 따라서 분기 처리
@@ -743,8 +826,12 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                                           Text('${index + 1}.'), //sangu123
                                           Checkbox(
                                             value: values[index],
-                                            visualDensity: VisualDensity(vertical: 1, horizontal: -4), // 크기 조절
-                                            side: BorderSide(width: 1, color: Colors.grey.shade400),
+                                            visualDensity: VisualDensity(
+                                                vertical: 1, horizontal: -4),
+                                            // 크기 조절
+                                            side: BorderSide(
+                                                width: 1,
+                                                color: Colors.grey.shade400),
                                             onChanged: (bool? newValue) {
                                               var newValues =
                                                   List<bool>.from(values);
@@ -757,9 +844,10 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                                                   data[index];
                                               if (newValue == true) {
                                                 // 체크박스가 선택되었을 때, 리스트에 해당 데이터가 없으면 추가
-                                                if (!selectedData.any((element) =>
-                                                    element['FormName'] ==
-                                                    item['FormName'])) {
+                                                if (!selectedData.any(
+                                                    (element) =>
+                                                        element['FormName'] ==
+                                                        item['FormName'])) {
                                                   selectedData.add(item);
                                                 }
                                               } else {
@@ -787,15 +875,15 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                                                       // print("@@아이콘 버튼 클릭");
                                                     },
                                                     icon: (data[index]
-                                                    ['UseYN'] ==
-                                                        'Y')
+                                                                ['UseYN'] ==
+                                                            'Y')
                                                         ? Icon(
-                                                      Icons.star,
-                                                      color:
-                                                      Colors.yellow,
-                                                    )
+                                                            Icons.star,
+                                                            color:
+                                                                Colors.yellow,
+                                                          )
                                                         : Icon(
-                                                        Icons.star_border))
+                                                            Icons.star_border))
                                               ],
                                             ),
                                           ),
@@ -870,7 +958,6 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
   }
 
   Widget consentSearchTypeWidget(int groupValue, Function(int) onChanged) {
-
     return Row(
       children: <Widget>[
         InkWell(
@@ -882,12 +969,21 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
               children: <Widget>[
                 Radio<int>(
                   value: 1,
-                  visualDensity: VisualDensity(vertical: -4, horizontal: -4), // 크기 조절
+                  visualDensity: VisualDensity(vertical: -4, horizontal: -4),
+                  // 크기 조절
                   groupValue: groupValue,
                   onChanged: (int? value) => onChanged(value!),
-                  activeColor: groupValue == 1 ? Color.fromRGBO(115, 140, 241, 1) : Color.fromRGBO(177, 177, 177, 1),
+                  activeColor: groupValue == 1
+                      ? Color.fromRGBO(115, 140, 241, 1)
+                      : Color.fromRGBO(177, 177, 177, 1),
                 ),
-                Text("전체",style: TextStyle(color:  groupValue == 1 ? Color.fromRGBO(115, 140, 241, 1) : null),),
+                Text(
+                  "전체",
+                  style: TextStyle(
+                      color: groupValue == 1
+                          ? Color.fromRGBO(115, 140, 241, 1)
+                          : null),
+                ),
               ],
             ),
           ),
@@ -901,12 +997,19 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
               children: <Widget>[
                 Radio<int>(
                   value: 2,
-                  visualDensity: VisualDensity(vertical: 1, horizontal: -4), // 크기 조절 ** 라디오나 체크박스의 마진등을 조절시 사용
+                  visualDensity: VisualDensity(vertical: 1, horizontal: -4),
+                  // 크기 조절 ** 라디오나 체크박스의 마진등을 조절시 사용
                   groupValue: groupValue,
                   onChanged: (int? value) => onChanged(value!),
                   activeColor: Color.fromRGBO(115, 140, 241, 1),
                 ),
-                Text("세트동의서",style: TextStyle(color:  groupValue == 2 ? Color.fromRGBO(115, 140, 241, 1) : null),),
+                Text(
+                  "세트동의서",
+                  style: TextStyle(
+                      color: groupValue == 2
+                          ? Color.fromRGBO(115, 140, 241, 1)
+                          : null),
+                ),
               ],
             ),
           ),
@@ -920,12 +1023,21 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
               children: <Widget>[
                 Radio<int>(
                   value: 3,
-                  visualDensity: VisualDensity(vertical: 1, horizontal: -4), // 크기 조절
+                  visualDensity: VisualDensity(vertical: 1, horizontal: -4),
+                  // 크기 조절
                   groupValue: groupValue,
                   onChanged: (int? value) => onChanged(value!),
-                  activeColor: groupValue == 3 ? Color.fromRGBO(115, 140, 241, 1) : Color.fromRGBO(177, 177, 177, 1),
+                  activeColor: groupValue == 3
+                      ? Color.fromRGBO(115, 140, 241, 1)
+                      : Color.fromRGBO(177, 177, 177, 1),
                 ),
-                Text("즐겨찾기",style: TextStyle(color:  groupValue == 3 ? Color.fromRGBO(115, 140, 241, 1) : null),),
+                Text(
+                  "즐겨찾기",
+                  style: TextStyle(
+                      color: groupValue == 3
+                          ? Color.fromRGBO(115, 140, 241, 1)
+                          : null),
+                ),
               ],
             ),
           ),
