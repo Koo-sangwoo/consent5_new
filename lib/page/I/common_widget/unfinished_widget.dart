@@ -62,8 +62,8 @@ class _UnfinishedWidgetState extends State<UnfinishedWidget> {
       height: 250,
       width: widget.isVerticalMode ? 375 : 380,
       margin: widget.isVerticalMode
-          ? const EdgeInsets.fromLTRB(5, 15, 10, 5)
-          : const EdgeInsets.fromLTRB(5, 15, 5, 10),
+          ? const EdgeInsets.fromLTRB(5, 15, 10, 5) // 세로
+          : const EdgeInsets.fromLTRB(5, 15, 5, 10), // 가로
       // 기존 right margin = 5;
       // color: Colors.blue,
       decoration: BoxDecoration(
@@ -72,14 +72,14 @@ class _UnfinishedWidgetState extends State<UnfinishedWidget> {
           borderRadius: BorderRadius.circular(20.0),
           boxShadow: const [
             BoxShadow(
-              color: Color.fromRGBO(0, 0, 0, 0.15),
+              color: Color.fromRGBO(0, 0, 0, 0.05),
               spreadRadius: 3,
               blurRadius: 30,
             )
           ]),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Container(
-          padding: EdgeInsets.fromLTRB(20, 20, 20, 5),
+          padding: EdgeInsets.fromLTRB(20, 10, 20, 5),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -88,38 +88,31 @@ class _UnfinishedWidgetState extends State<UnfinishedWidget> {
                 style: TextStyle(fontWeight: FontWeight.w600, fontSize: 17),
               ),
               Container(
-                  width: 100,
-                  height: 30,
+                  // width: 100,
+                  // height: 30,
                   margin: EdgeInsets.zero,
                   padding: EdgeInsets.zero,
                   child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15.0),
-                            side: const BorderSide(
-                              color : Color.fromRGBO(115, 140, 243, 1),
-                              width: 0.5, // 테두리 두께
-                          )
-                        )
-                      ),
-                      onPressed: () async { // 모든 처방동의서를 열 것인지 물어본다.
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30.0),
+                              side: const BorderSide(
+                                color: Color.fromRGBO(115, 140, 243, 1),
+                                width: 0.5, // 테두리 두께
+                              ))),
+                      onPressed: () async {
+                        // 모든 처방동의서를 열 것인지 물어본다.
                         List<dynamic> fdata = await getUnfinishedInfo();
                         List<Map<String, String>> consents = [];
                         fdata.forEach((data) {
                           Map<String, String> consentMap = {
-                            'FormCd':
-                            data['FormCd'].toString(),
-                            'FormId':
-                            data['FormId'].toString(),
-                            'FormVersion': data['FormVersion']
-                                .toString(),
-                            'FormRid':
-                            data['FormRid'].toString(),
-                            'FormGuid':
-                            data['FormGuid'].toString(),
-                            'FormName':
-                            data['FormName'].toString(),
+                            'FormCd': data['FormCd'].toString(),
+                            'FormId': data['FormId'].toString(),
+                            'FormVersion': data['FormVersion'].toString(),
+                            'FormRid': data['FormRid'].toString(),
+                            'FormGuid': data['FormGuid'].toString(),
+                            'FormName': data['FormName'].toString(),
                           };
                           consents.add(consentMap);
                         });
@@ -128,14 +121,13 @@ class _UnfinishedWidgetState extends State<UnfinishedWidget> {
 
                         // 환자정보 세팅
                         Map<dynamic, dynamic> params =
-                            _patientDetailController
-                                .patientDetail.value;
+                            _patientDetailController.patientDetail.value;
 
-                        for(int i = 0; i < 2; i++){
-                          if(formNames == ''){
+                        for (int i = 0; i < 2; i++) {
+                          if (formNames == '') {
                             formNames = consents[0]['FormName']!;
-                          }else{
-                            formNames += '외 ${consents.length-1}개의 ';
+                          } else {
+                            formNames += '외 ${consents.length - 1}개의 ';
                           }
                         }
 
@@ -144,29 +136,22 @@ class _UnfinishedWidgetState extends State<UnfinishedWidget> {
                             barrierDismissible: true,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                content: Text(
-                                    '${formNames} 서식을 열겠습니까?'),
+                                content: Text('${formNames} 서식을 열겠습니까?'),
                                 actions: [
                                   ElevatedButton(
                                       onPressed: () {
-                                        Navigator.of(context)
-                                            .pop();
-                                        platform.invokeMethod(
-                                            'openEForm', {
+                                        Navigator.of(context).pop();
+                                        platform.invokeMethod('openEForm', {
                                           'type': 'new',
-                                          'consents':
-                                          jsonEncode(
-                                              consents),
-                                          'params': jsonEncode(
-                                              params),
+                                          'consents': jsonEncode(consents),
+                                          'params': jsonEncode(params),
                                           // 'op': 'someOperation',
                                         });
                                       },
                                       child: Text('확인')),
                                   ElevatedButton(
                                       onPressed: () {
-                                        Navigator.of(context)
-                                            .pop();
+                                        Navigator.of(context).pop();
                                       },
                                       child: Text('취소'))
                                 ],
@@ -175,7 +160,9 @@ class _UnfinishedWidgetState extends State<UnfinishedWidget> {
                       },
                       child: Text(
                         '전체선택',
-                        style: TextStyle(fontSize: 12, color: Color.fromRGBO(115, 140, 243, 1)),
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: Color.fromRGBO(115, 140, 243, 1)),
                       ))),
             ],
           ),
@@ -204,7 +191,6 @@ class _UnfinishedWidgetState extends State<UnfinishedWidget> {
                           checkboxValuesNotifier.value =
                               List.generate(data.length, (index) => false);
                         }
-
 
                         return ListView.separated(
                           itemCount: data.length,
@@ -260,14 +246,16 @@ class _UnfinishedWidgetState extends State<UnfinishedWidget> {
                                             .patientDetail.value;
 
                                     String formNames = '';
-                                    if (selectedData.length < 2) { // 체크박스가 하나만 체크되었거나, 하나도체크가되지않았을때
+                                    if (selectedData.length < 2) {
+                                      // 체크박스가 하나만 체크되었거나, 하나도체크가되지않았을때
                                       formNames = data[index]['FormName'];
                                     } else {
-                                      for(int i = 0; i < 2; i++){
-                                        if(i == 0){
+                                      for (int i = 0; i < 2; i++) {
+                                        if (i == 0) {
                                           formNames = consents[0]['FormName']!;
-                                        }else{
-                                          formNames += '외 ${consents.length-1}개의 ';
+                                        } else {
+                                          formNames +=
+                                              '외 ${consents.length - 1}개의 ';
                                         }
                                       }
                                     }
@@ -280,8 +268,10 @@ class _UnfinishedWidgetState extends State<UnfinishedWidget> {
                                         barrierDismissible: true,
                                         builder: (BuildContext context) {
                                           return AlertDialog(
-                                            content:
-                                                Text(selectedData.length == data.length ? '모든 처방동의서를 열겠습니까?' : '${formNames} 서식을 열겠습니까?'),
+                                            content: Text(selectedData.length ==
+                                                    data.length
+                                                ? '모든 처방동의서를 열겠습니까?'
+                                                : '${formNames} 서식을 열겠습니까?'),
                                             actions: [
                                               ElevatedButton(
                                                   onPressed: () {

@@ -5,10 +5,9 @@ import 'package:get/get.dart';
 import './page/LoginPage.dart';
 
 void main() {
-  runApp(
-      const MyApp()
+  runApp(const MyApp()
       // test()
-  );
+      );
 }
 
 class MyApp extends StatelessWidget {
@@ -18,6 +17,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'ConsentApp',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),

@@ -26,7 +26,8 @@ class _LoginPageState extends State<LoginPage> {
 
   final _Idcontroller = TextEditingController();
   final _Pwcontroller = TextEditingController();
-  final PatientDetailController _patientDetailController = Get.put(PatientDetailController());
+  final PatientDetailController _patientDetailController =
+      Get.put(PatientDetailController());
 
   FocusNode myFocusNode = FocusNode();
 
@@ -52,7 +53,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
         backgroundColor: Colors.white,
         body: GestureDetector(
-          onTap: (){
+          onTap: () {
             FocusScope.of(context).unfocus();
           },
           child: SafeArea(
@@ -139,11 +140,12 @@ class _LoginPageState extends State<LoginPage> {
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(10),
                                   border: Border.all(
-                                      color:
-                                          const Color.fromRGBO(143, 148, 251, 1)),
+                                      color: const Color.fromRGBO(
+                                          143, 148, 251, 1)),
                                   boxShadow: const [
                                     BoxShadow(
-                                        color: Color.fromRGBO(143, 148, 251, .2),
+                                        color:
+                                            Color.fromRGBO(143, 148, 251, .2),
                                         blurRadius: 20.0,
                                         offset: Offset(0, 10))
                                   ]),
@@ -165,8 +167,8 @@ class _LoginPageState extends State<LoginPage> {
                                       decoration: InputDecoration(
                                           border: InputBorder.none,
                                           hintText: "id",
-                                          hintStyle:
-                                              TextStyle(color: Colors.grey[700])),
+                                          hintStyle: TextStyle(
+                                              color: Colors.grey[700])),
                                     ),
                                   ),
                                   Container(
@@ -178,8 +180,8 @@ class _LoginPageState extends State<LoginPage> {
                                       decoration: InputDecoration(
                                           border: InputBorder.none,
                                           hintText: "password",
-                                          hintStyle:
-                                              TextStyle(color: Colors.grey[700])),
+                                          hintStyle: TextStyle(
+                                              color: Colors.grey[700])),
                                     ),
                                   )
                                 ],
@@ -256,13 +258,15 @@ class _LoginPageState extends State<LoginPage> {
                                       key: "userInfo",
                                       value: jsonEncode(result),
                                     );
-                                    _patientDetailController.updatePatientInfo(userInfo: result);
+                                    _patientDetailController.updatePatientInfo(
+                                        userInfo: result);
                                     print("@@$result");
 
-                                    if(result != null) {
-                                    Navigator.of(context).push(MaterialPageRoute(builder: (context){
-                                      return MainPage();
-                                    }));
+                                    if (result != null) {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(builder: (context) {
+                                        return MainPage();
+                                      }));
                                     }
 
                                     setState(() {
@@ -288,7 +292,8 @@ class _LoginPageState extends State<LoginPage> {
                                             // RoundedRectangleBorder - Dialog 화면 모서리 둥글게 조절
                                             shape: RoundedRectangleBorder(
                                                 borderRadius:
-                                                    BorderRadius.circular(10.0)),
+                                                    BorderRadius.circular(
+                                                        10.0)),
                                             //Dialog Main Title
                                             title: const Column(
                                               children: <Widget>[
@@ -332,15 +337,13 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-void requestPermissions() async{
-  final Map<Permission,PermissionStatus> permissions = await [
-  Permission.camera, // 카메라 권한
-      Permission.photos, // 사진, 동영상 권한
-  Permission.microphone, // 녹음 권한
-  Permission.manageExternalStorage,// 저장소 관련 권한
+void requestPermissions() async {
+  final Map<Permission, PermissionStatus> permissions = await [
+    Permission.camera, // 카메라 권한
+    Permission.photos, // 사진, 동영상 권한
+    Permission.microphone, // 녹음 권한
+    Permission.manageExternalStorage, // 저장소 관련 권한
   ].request();
-
-
 
   print('권한 요청 상태 ${permissions.toString()}');
 }
@@ -359,11 +362,6 @@ void requestPermissions() async{
 //     return result;
 //   }
 // }
-
-
-
-
-
 
 // Future<Map<String, dynamic>> makeRequest() async {
 //   var url = 'http://59.11.2.207:50089/HospitalSvc.aspx';

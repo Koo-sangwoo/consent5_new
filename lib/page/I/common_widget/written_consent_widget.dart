@@ -89,7 +89,7 @@ class _WriteConsentWidgetState extends State<WriteConsentWidget>
             color: Colors.white,
             boxShadow: const [
               BoxShadow(
-                color: Color.fromRGBO(0, 0, 0, 0.1),
+                color: Color.fromRGBO(0, 0, 0, 0.05),
                 spreadRadius: 3,
                 blurRadius: 30,
               )

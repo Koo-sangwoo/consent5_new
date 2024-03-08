@@ -146,12 +146,18 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8), // 버튼 패딩 조정
-                      backgroundColor: _isListening ? Color.fromRGBO(115, 140, 243, 1) : Color.fromRGBO(255, 255, 255, 1),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8), // 버튼 패딩 조정
+                      backgroundColor: _isListening
+                          ? Color.fromRGBO(115, 140, 243, 1)
+                          : Color.fromRGBO(255, 255, 255, 1),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0), // 테두리의 둥근 정도를 설정
+                        borderRadius:
+                            BorderRadius.circular(30.0), // 테두리의 둥근 정도를 설정
                         side: BorderSide(
-                          color: _isListening ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(115, 140, 243, 1), // 테두리 색상
+                          color: _isListening
+                              ? Color.fromRGBO(255, 255, 255, 1)
+                              : Color.fromRGBO(115, 140, 243, 1), // 테두리 색상
                           width: 0.5, // 테두리 두께
                         ),
                       ),
@@ -162,21 +168,24 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                         Icon(
                           _isListening ? Icons.mic_off : Icons.mic,
                           size: 25, // 아이콘 크기 조정
-                          color: _isListening ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(115, 140, 243, 1),
+                          color: _isListening
+                              ? Color.fromRGBO(255, 255, 255, 1)
+                              : Color.fromRGBO(115, 140, 243, 1),
                         ),
                         SizedBox(width: 4), // 아이콘과 텍스트 사이의 간격 조정
                         Text(
                           'AI',
                           style: TextStyle(
                             fontSize: 14,
-                            color: _isListening ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(115, 140, 243, 1),
+                            color: _isListening
+                                ? Color.fromRGBO(255, 255, 255, 1)
+                                : Color.fromRGBO(115, 140, 243, 1),
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
-
               ],
             ),
             Padding(
@@ -201,15 +210,35 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                           },
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
+                              borderSide: const BorderSide(
+                                  color: Colors.grey, width: 1),
                               borderRadius:
-                                  BorderRadius.circular(5.0), // 경계선의 둥근 모서리 반경
+                                  BorderRadius.circular(12), // 경계선의 둥근 모서리 반경
                             ),
-                            // hintText: '검색',
-                            hintStyle: TextStyle(fontSize: 12.0),
+                            enabledBorder: OutlineInputBorder(
+                              // 평상시의 textField외곽선에 대한 선 지정
+                              borderSide: BorderSide(
+                                color: Color.fromRGBO(
+                                    233, 233, 233, 1), // 활성화된 상태의 테두리 색상
+                                width: 1.0, // 활성화된 상태의 테두리 두께
+                              ),
+                              borderRadius: BorderRadius.circular(
+                                  12.0), // 활성화된 상태의 테두리 모서리 반경
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              // 텍스트 필드에 포커싱이 잡혀있을때(커서가 잡혀있을때)
+                              borderSide: BorderSide(
+                                  color: const Color.fromRGBO(233, 233, 233, 1),
+                                  width: 1.0),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            hintText: '검색',
+                            hintStyle: TextStyle(
+                                fontSize: 12.0,
+                                color: Color.fromRGBO(233, 233, 233, 1)),
                             // 힌트 텍스트의 글자 크기
                             filled: true,
-                            fillColor: Color.fromRGBO(243, 246, 255, 1),
+                            fillColor: Colors.white,
                             contentPadding: EdgeInsets.symmetric(
                                 vertical: 4.0, horizontal: 8.0), // 패딩
                             // TextField의 오른쪽에 IconButton을 위한 공간 확보
@@ -217,10 +246,13 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                           style: TextStyle(fontSize: 12.0),
                         ),
                         Container(
-                          margin:
-                              EdgeInsets.only(left: 0.0), // TextField와 버튼 사이의 간격 조정
+                          // 검색창 버튼
+                          margin: EdgeInsets.only(
+                              left: 0.0), // TextField와 버튼 사이의 간격 조정
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10.0),
+                            borderRadius: BorderRadius.horizontal(
+                                left: Radius.circular(0),
+                                right: Radius.circular(12)), // 라운드를 오른쪽만 주게됨
                             color: Color.fromRGBO(115, 140, 243, 1),
                             border: Border.all(
                               color: Colors.white,
@@ -344,14 +376,17 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                                             "JSON 변형값 consents : ${jsonEncode(consents)}, params : ${jsonEncode(params)}");
 
                                         String formNames = '';
-                                        if (selectedData.length < 2) { // 체크박스가 하나만 체크되었거나, 하나도체크가되지않았을때
+                                        if (selectedData.length < 2) {
+                                          // 체크박스가 하나만 체크되었거나, 하나도체크가되지않았을때
                                           formNames = data[index]['FormName'];
                                         } else {
-                                          for(int i = 0; i < 2; i++){
-                                            if(i == 0){
-                                              formNames = consents[0]['FormName']!;
-                                            }else{
-                                              formNames += '외 ${consents.length-1}개의 ';
+                                          for (int i = 0; i < 2; i++) {
+                                            if (i == 0) {
+                                              formNames =
+                                                  consents[0]['FormName']!;
+                                            } else {
+                                              formNames +=
+                                                  '외 ${consents.length - 1}개의 ';
                                             }
                                           }
                                         }
@@ -584,37 +619,47 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8), // 버튼 패딩 조정
-                    backgroundColor: _isListening ? Color.fromRGBO(115, 140, 243, 1) : Color.fromRGBO(255, 255, 255, 1),
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 8), // 버튼 패딩 조정
+                    backgroundColor: _isListening
+                        ? Color.fromRGBO(115, 140, 243, 1)
+                        : Color.fromRGBO(255, 255, 255, 1),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0), // 테두리의 둥근 정도를 설정
+                      borderRadius:
+                          BorderRadius.circular(30.0), // 테두리의 둥근 정도를 설정
                       side: BorderSide(
-                        color: _isListening ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(115, 140, 243, 1), // 테두리 색상
+                        color: _isListening
+                            ? Color.fromRGBO(255, 255, 255, 1)
+                            : Color.fromRGBO(115, 140, 243, 1), // 테두리 색상
                         width: 0.5, // 테두리 두께
                       ),
                     ),
                   ),
                   child: Row(
-                    mainAxisSize: MainAxisSize.min, // Row의 크기를 내용물 크기에 맞게 조정
+                    mainAxisSize: MainAxisSize.min,
+                    // Row의 크기를 내용물 크기에 맞게 조정
                     children: <Widget>[
                       Icon(
                         _isListening ? Icons.mic_off : Icons.mic,
                         size: 25, // 아이콘 크기 조정
-                        color: _isListening ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(115, 140, 243, 1),
+                        color: _isListening
+                            ? Color.fromRGBO(255, 255, 255, 1)
+                            : Color.fromRGBO(115, 140, 243, 1),
                       ),
                       SizedBox(width: 4), // 아이콘과 텍스트 사이의 간격 조정
                       Text(
                         'AI',
                         style: TextStyle(
                           fontSize: 14,
-                          color: _isListening ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(115, 140, 243, 1),
+                          color: _isListening
+                              ? Color.fromRGBO(255, 255, 255, 1)
+                              : Color.fromRGBO(115, 140, 243, 1),
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-
             ],
           ),
           Padding(
@@ -759,14 +804,17 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                                               .patientDetail.value;
 
                                       String formNames = '';
-                                      if (selectedData.length < 2) { // 체크박스가 하나만 체크되었거나, 하나도체크가되지않았을때
+                                      if (selectedData.length < 2) {
+                                        // 체크박스가 하나만 체크되었거나, 하나도체크가되지않았을때
                                         formNames = data[index]['FormName'];
                                       } else {
-                                        for(int i = 0; i < 2; i++){
-                                          if(i == 0){
-                                            formNames = consents[0]['FormName']!;
-                                          }else{
-                                            formNames += '외 ${consents.length-1}개의 ';
+                                        for (int i = 0; i < 2; i++) {
+                                          if (i == 0) {
+                                            formNames =
+                                                consents[0]['FormName']!;
+                                          } else {
+                                            formNames +=
+                                                '외 ${consents.length - 1}개의 ';
                                           }
                                         }
                                       }

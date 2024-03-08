@@ -141,7 +141,7 @@ class _PatientInfoWidgetState extends State<PatientInfoWidget> {
           color: Colors.white,
           boxShadow: const [
             BoxShadow(
-              color: Color.fromRGBO(0, 0, 0, 0.15),
+              color: Color.fromRGBO(0, 0, 0, 0.05),
               spreadRadius: 3,
               blurRadius: 30,
             )
@@ -158,15 +158,15 @@ class _PatientInfoWidgetState extends State<PatientInfoWidget> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Container(
-                  margin: EdgeInsets.symmetric(vertical: 3,horizontal: 20),
+                  margin: EdgeInsets.symmetric(vertical: 3, horizontal: 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     // 환자 정보 위젯 검색 / 환자 검색
                     children: [
                       const Text(
                         "환자 정보",
-                        style:
-                            TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                            fontSize: 17, fontWeight: FontWeight.w600),
                       ),
                       SizedBox(
                         width: 10,
@@ -198,87 +198,94 @@ class _PatientInfoWidgetState extends State<PatientInfoWidget> {
                                   fontSize: 14,
                                   color: _isListening
                                       ? Color.fromRGBO(255, 255, 255, 1)
-                                      : Color.fromRGBO(115, 140, 243, 1) // 텍스트 크기 조정
+                                      : Color.fromRGBO(
+                                          115, 140, 243, 1) // 텍스트 크기 조정
                                   ),
                             ),
                             style: ElevatedButton.styleFrom(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 12, vertical: 8), // 버튼 패딩 조정
-                              backgroundColor: _isListening ? Color.fromRGBO(115, 140, 243, 1): Color.fromRGBO(255, 255, 255, 1),
+                              backgroundColor: _isListening
+                                  ? Color.fromRGBO(115, 140, 243, 1)
+                                  : Color.fromRGBO(255, 255, 255, 1),
                               shape: RoundedRectangleBorder(
                                 // 여기서 수정되었습니다.
                                 borderRadius: BorderRadius.circular(30.0),
                                 // 테두리의 둥근 정도를 설정
                                 side: BorderSide(
-                                  color: _isListening ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(115, 140, 243, 1), // 테두리 색상
+                                  color: _isListening
+                                      ? Color.fromRGBO(255, 255, 255, 1)
+                                      : Color.fromRGBO(
+                                          115, 140, 243, 1), // 테두리 색상
                                   width: 0.5, // 테두리 두께
                                 ), // 버튼 패딩
                               ),
                             ),
                           ),
-                  
-                      SizedBox(
-                        width: 5,
-                      ),
-                      ElevatedButton(
-                          // 바코드 스캔 버튼
-                          onPressed: () async {
-                            // print('스캐너 클릭');
-                            _textFieldEditingController.text = '';
-                            _textController.add('');
-                  
-                            String barcodeScanResult =
-                                await FlutterBarcodeScanner.scanBarcode(
-                              "#004297",
-                              "Cancel",
-                              false,
-                              ScanMode.BARCODE,
-                            );
-                  
-                            if (barcodeScanResult != '-1') {
-                              // print('@@스캔 결과 : $barcodeScanResult}');
-                              _textFieldEditingController.text =
-                                  barcodeScanResult;
-                              _textController.add(barcodeScanResult);
-                            } else {
-                              print('사용자가 취소했습니다.');
-                            }
-                          },
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min, // 아이콘과 텍스트를 가까이 배치
-                            children: [
-                              Icon(
-                                Icons.bar_chart_outlined,
-                                size: 20, // 아이콘 크기
-                              ),
-                              SizedBox(width: 8), // 아이콘과 텍스트 사이 간격
-                              Text(
-                                '바코드',
-                                style: TextStyle(
-                                  fontSize: 14, // 텍스트 크기
-                                ),
-                              ),
-                            ],
+                          SizedBox(
+                            width: 5,
                           ),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.white,
-                            // 버튼 배경 색상
-                            onPrimary: Color.fromRGBO(115, 140, 243, 1)
-                            // 텍스트 크기 조정
-                            ,
-                            // 버튼 전경 색상 (텍스트 및 아이콘)
-                            padding:
-                                EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                            shape: RoundedRectangleBorder(
-                              // 여기서 수정되었습니다.
-                              borderRadius: BorderRadius.circular(30.0),
-                              // 테두리의 둥근 정도를 설정
-                              side: BorderSide(
-                                color: Color.fromRGBO(115, 140, 243, 1), // 테두리 색상
-                                width: 0.5, // 테두리 두께
-                              ), // 버튼 패딩
-                            ),
-                          ))
+                          ElevatedButton(
+                              // 바코드 스캔 버튼
+                              onPressed: () async {
+                                // print('스캐너 클릭');
+                                _textFieldEditingController.text = '';
+                                _textController.add('');
+
+                                String barcodeScanResult =
+                                    await FlutterBarcodeScanner.scanBarcode(
+                                  "#004297",
+                                  "Cancel",
+                                  false,
+                                  ScanMode.BARCODE,
+                                );
+
+                                if (barcodeScanResult != '-1') {
+                                  // print('@@스캔 결과 : $barcodeScanResult}');
+                                  _textFieldEditingController.text =
+                                      barcodeScanResult;
+                                  _textController.add(barcodeScanResult);
+                                } else {
+                                  print('사용자가 취소했습니다.');
+                                }
+                              },
+                              child: Row(
+                                mainAxisSize:
+                                    MainAxisSize.min, // 아이콘과 텍스트를 가까이 배치
+                                children: [
+                                  Icon(
+                                    Icons.bar_chart_outlined,
+                                    size: 20, // 아이콘 크기
+                                  ),
+                                  SizedBox(width: 8), // 아이콘과 텍스트 사이 간격
+                                  Text(
+                                    '바코드',
+                                    style: TextStyle(
+                                      fontSize: 14, // 텍스트 크기
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.white,
+                                // 버튼 배경 색상
+                                onPrimary: Color.fromRGBO(115, 140, 243, 1)
+                                // 텍스트 크기 조정
+                                ,
+                                // 버튼 전경 색상 (텍스트 및 아이콘)
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 8),
+                                shape: RoundedRectangleBorder(
+                                  // 여기서 수정되었습니다.
+                                  borderRadius: BorderRadius.circular(30.0),
+                                  // 테두리의 둥근 정도를 설정
+                                  side: BorderSide(
+                                    color: Color.fromRGBO(
+                                        115, 140, 243, 1), // 테두리 색상
+                                    width: 0.5, // 테두리 두께
+                                  ), // 버튼 패딩
+                                ),
+                              ))
                         ],
                       ),
                     ],
@@ -319,28 +326,28 @@ class _PatientInfoWidgetState extends State<PatientInfoWidget> {
                               labelText: '환자명을 입력하세요',
                               labelStyle: TextStyle(
                                   fontSize: 10, // 글자 크기 조정
-                                  color: Colors.grey.withOpacity(0.5)),
+                                  color: Color.fromRGBO(233, 233, 233, 1)),
                               border: OutlineInputBorder(
                                 borderSide: BorderSide(
                                     width: 1, // 테두리 두께 줄임
-                                    color: Colors.grey.withOpacity(0.5)),
+                                    color: Color.fromRGBO(233, 233, 233, 1)),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
                                     width: 1, // 테두리 두께 줄임
-                                    color: Colors.grey.withOpacity(0.5)),
+                                    color: Color.fromRGBO(233, 233, 233, 1)),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
                                     width: 1, // 테두리 두께 줄임
-                                    color: Colors.grey.withOpacity(0.5)),
+                                    color: Color.fromRGBO(233, 233, 233, 1)),
                               ),
                               contentPadding: EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 1), // 내부 패딩 조정
                             ),
                             style: TextStyle(
-                              fontSize: 10, // 입력 텍스트의 글자 크기 조정
-                            ),
+                                fontSize: 10, // 입력 텍스트의 글자 크기 조정
+                                color: Color.fromRGBO(233, 233, 233, 1)),
                           ),
                         ),
                       );
@@ -405,33 +412,33 @@ class _PatientInfoWidgetState extends State<PatientInfoWidget> {
                                           decoration: BoxDecoration(
                                             color: isSelected
                                                 ? const Color.fromRGBO(
-                                                    248, 249, 255, 1)
+                                                    250, 251, 255, 1)
                                                 : Colors.white,
                                             border: Border(
                                               bottom: isSelected
                                                   ? BorderSide(
-                                                      width: 2.0,
-                                                      color:
-                                                          Colors.blue.shade300)
+                                                      width: 1.0,
+                                                      color: Color.fromRGBO(
+                                                          115, 140, 243, 1))
                                                   : const BorderSide(
                                                       width: 0.5,
                                                       color: Color.fromRGBO(
                                                           233, 233, 233, 1),
                                                     ),
                                               top: BorderSide(
-                                                  width: 2.0,
+                                                  width: 1.0,
                                                   color: isSelected
                                                       ? const Color.fromRGBO(
                                                           115, 140, 243, 1)
                                                       : Colors.transparent),
                                               left: BorderSide(
-                                                  width: 2.0,
+                                                  width: 1.0,
                                                   color: isSelected
                                                       ? const Color.fromRGBO(
                                                           115, 140, 243, 1)
                                                       : Colors.transparent),
                                               right: BorderSide(
-                                                  width: 2.0,
+                                                  width: 1.0,
                                                   color: isSelected
                                                       ? const Color.fromRGBO(
                                                           115, 140, 243, 1)
@@ -689,8 +696,9 @@ class _PatientInfoWidgetState extends State<PatientInfoWidget> {
                                         border: Border(
                                           bottom: isSelected
                                               ? BorderSide(
-                                                  width: 2.0,
-                                                  color: Colors.blue.shade300)
+                                                  width: 1.0,
+                                                  color: Color.fromRGBO(
+                                                      115, 140, 243, 1))
                                               : BorderSide(
                                                   width: 0.5,
                                                   color: Color.fromRGBO(
@@ -698,18 +706,21 @@ class _PatientInfoWidgetState extends State<PatientInfoWidget> {
                                                 ),
                                           top: isSelected
                                               ? BorderSide(
-                                                  width: 2.0,
-                                                  color: Colors.blue.shade300)
+                                                  width: 1.0,
+                                                  color: Color.fromRGBO(
+                                                      115, 140, 243, 1))
                                               : BorderSide.none,
                                           left: isSelected
                                               ? BorderSide(
-                                                  width: 2.0,
-                                                  color: Colors.blue.shade300)
+                                                  width: 1.0,
+                                                  color: Color.fromRGBO(
+                                                      115, 140, 243, 1))
                                               : BorderSide.none,
                                           right: isSelected
                                               ? BorderSide(
-                                                  width: 2.0,
-                                                  color: Colors.blue.shade300)
+                                                  width: 1.0,
+                                                  color: Color.fromRGBO(
+                                                      115, 140, 243, 1))
                                               : BorderSide.none,
                                         ),
                                       ),
@@ -890,7 +901,6 @@ class _PatientInfoWidgetState extends State<PatientInfoWidget> {
    * consentNum은 알림 표시를 위해 서식에 대한 정보를 그릴때만 인자로 입력
    */
   Widget patientConsentInfo({required String consentType, String? consentNum}) {
-
     Color textColor = Color.fromRGBO(255, 255, 255, 1); // 완료
     if (isNumeric(consentType)) {
       // 환자 번호
@@ -899,60 +909,58 @@ class _PatientInfoWidgetState extends State<PatientInfoWidget> {
       // 환자 진료과
       textColor = const Color.fromRGBO(53, 158, 255, 1);
     }
-    
+
     Color consentBackColor = Color.fromRGBO(115, 140, 243, 1);
-    switch(consentType){
-      case '진행' :
+    switch (consentType) {
+      case '진행':
         consentBackColor = Color.fromRGBO(81, 203, 188, 1);
         break;
-      case '완료' :
+      case '완료':
         consentBackColor = Color.fromRGBO(167, 129, 248, 1);
         break;
-      case '응급' :
+      case '응급':
         consentBackColor = Color.fromRGBO(235, 133, 133, 1);
-      break;
-      case '구두' :
+        break;
+      case '구두':
         consentBackColor = Color.fromRGBO(253, 170, 46, 1);
-      break;
+        break;
     }
     // print('consent type : $consentType , ${isEnglish(consentType)}');
     return consentNum != null
         ? Container(
-          height: 30,
-          margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
-          // 과코드일때만 위젯의 왼쪽 마진을 줄인다.
-          padding: EdgeInsets.fromLTRB(6, 4, 6, 4),
-          decoration: BoxDecoration(
-              color: consentBackColor,
-              borderRadius: BorderRadius.circular(15)),
-          child: Row(
-            children: [
-              Text(
-                consentType,
-                style: TextStyle(color: textColor, fontSize: 12),
-              ),
-              SizedBox(width: 4,),
-              Container(
-                width: 18,
-                height: 18,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle
+            height: 30,
+            margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
+            // 과코드일때만 위젯의 왼쪽 마진을 줄인다.
+            padding: EdgeInsets.fromLTRB(6, 4, 6, 4),
+            decoration: BoxDecoration(
+                color: consentBackColor,
+                borderRadius: BorderRadius.circular(15)),
+            child: Row(
+              children: [
+                Text(
+                  consentType,
+                  style: TextStyle(color: textColor, fontSize: 12),
                 ),
-                child: Center(
-                  child: Text(
-                    consentNum,
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: consentBackColor
+                SizedBox(
+                  width: 4,
+                ),
+                Container(
+                  width: 18,
+                  height: 18,
+                  decoration: BoxDecoration(
+                      color: Colors.white, shape: BoxShape.circle),
+                  child: Center(
+                    child: Text(
+                      consentNum,
+                      style: TextStyle(fontSize: 10, color: consentBackColor),
                     ),
                   ),
-                ),
-              )
-            ],
-          ),
-        )
-        : Container( // 환자번호와 환자 진료과코드를 나타내는 위젯
+                )
+              ],
+            ),
+          )
+        : Container(
+            // 환자번호와 환자 진료과코드를 나타내는 위젯
             height: 30,
             margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
             padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
