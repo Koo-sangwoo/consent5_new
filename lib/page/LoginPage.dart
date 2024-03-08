@@ -246,7 +246,7 @@ class _LoginPageState extends State<LoginPage> {
                                   String userId = _Idcontroller.text;
                                   String userPw = _Pwcontroller.text;
                                   String url = "";
-
+                                  print("로그인 로직 시작");
                                   result = await makeRequest(
                                       methodName: methodName,
                                       userId: userId,
