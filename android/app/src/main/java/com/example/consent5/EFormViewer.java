@@ -547,22 +547,23 @@ public class EFormViewer {
 
                 paramUserId = "01";// 기존 --> params.getString("userId");
                 paramPatientCode = patientDetail.getString("PatientCode");
-                paramPatientName = patientDetail.getString("PatientName");
+//                paramPatientName = patientDetail.getString("PatientName");
 
-                Log.i(TAG, "들어온 타입 : " + type);
-                Log.i(TAG, "path : 퓨패패패" + path);
-                Log.i(TAG, "로그인 사용자 ID :" + paramUserId);// 기존 --> params.getString("userId")
-                Log.i(TAG, "선택한 환자코드 :" + patientDetail.getString("PatientCode"));
-                Log.i(TAG, "consent : 퓨퓨퓨퓨" + consent.toString());
-                Log.i(TAG, "FormCd :" + consent.getString("FormCd"));
-                Log.i(TAG, "FormCd :" + consent.getString("FormCd"));
-                Log.i(TAG, "FormId 아이디 :" + consent.getString("FormId"));
-                Log.i(TAG, "Form :" + consent.getString("FormVersion"));
-                Log.i(TAG, "FormCd :" + consent.getString("FormCd"));
-                Log.i(TAG, "FormRid :" + consent.getString("FormRid"));
-                Log.i(TAG, "FromGuid :" + consent.getString("FormGuid"));
-                Log.i(TAG, "path : 패패패패" + path);
-                Log.i(TAG, "type : 패패패패" + type);
+//
+//                Log.i(TAG, "들어온 타입 : " + type);
+//                Log.i(TAG, "path : 퓨패패패" + path);
+//                Log.i(TAG, "로그인 사용자 ID :" + paramUserId);// 기존 --> params.getString("userId")
+//                Log.i(TAG, "선택한 환자코드 :" + patientDetail.getString("PatientCode"));
+//                Log.i(TAG, "consent : 퓨퓨퓨퓨" + consent.toString());
+//                Log.i(TAG, "FormCd :" + consent.getString("FormCd"));
+//                Log.i(TAG, "FormCd :" + consent.getString("FormCd"));
+//                Log.i(TAG, "FormId 아이디 :" + consent.getString("FormId"));
+//                Log.i(TAG, "Form :" + consent.getString("FormVersion"));
+//                Log.i(TAG, "FormCd :" + consent.getString("FormCd"));
+//                Log.i(TAG, "FormRid :" + consent.getString("FormRid"));
+//                Log.i(TAG, "FromGuid :" + consent.getString("FormGuid"));
+//                Log.i(TAG, "path : 패패패패" + path);
+//                Log.i(TAG, "type : 패패패패" + type);
 
                 String guid = UUID.randomUUID().toString();
                 if (type.equals("new")) {
@@ -1083,6 +1084,7 @@ public class EFormViewer {
         String path = "";
         String patientCode = "";
         try {
+            Log.i("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@","requestOption toString : " + requestOptions.toString());
             JSONObject params = new JSONObject(requestOptions.getString("detail")); // 환자 상세 정보;
 
             patientCode = params.getString("PatientCode");

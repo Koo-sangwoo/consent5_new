@@ -126,7 +126,8 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                consentSearchTypeWidget(consentSearchType, (int newValue) {
+                consentSearchTypeWidget(isVerticalMode, consentSearchType,
+                    (int newValue) {
                   setState(() {
                     this.consentSearchType = newValue;
                   });
@@ -581,12 +582,13 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
     const platform = MethodChannel('com.example.consent5/kmiPlugin');
     return Expanded(
         child: Container(
-      width: MediaQuery.of(context).size.width - 10,
-      margin: const EdgeInsets.fromLTRB(5, 10, 5, 10),
+      width: MediaQuery.of(context).size.width * 0.5 - 25,
+      margin: const EdgeInsets.fromLTRB(5, 5, 10, 10),
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 20),
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(32.0),
+        borderRadius: BorderRadius.circular(20.0),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -599,7 +601,8 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              consentSearchTypeWidget(consentSearchType, (int newValue) {
+              consentSearchTypeWidget(isVerticalMode, consentSearchType,
+                  (int newValue) {
                 setState(() {
                   this.consentSearchType = newValue;
                 });
@@ -673,16 +676,46 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                     children: <Widget>[
                       TextField(
                         controller: _textFieldEditingController,
+                        // 2024/02/28
+                        // 검색했다가 값을 지워서 공백값이 되면 전체 동의서리스트를 가져오게함.
+                        onChanged: (String value) {
+                          if (value.length == 0) {
+                            print('0이다!');
+                            _searchWordController.updateSearchWord("");
+                            setState(() {});
+                          }
+                        },
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
-                            borderSide: BorderSide.none,
+                            borderSide:
+                                const BorderSide(color: Colors.grey, width: 1),
                             borderRadius:
-                                BorderRadius.circular(5.0), // 경계선의 둥근 모서리 반경
+                                BorderRadius.circular(12), // 경계선의 둥근 모서리 반경
                           ),
-                          hintStyle: TextStyle(fontSize: 12.0),
+                          enabledBorder: OutlineInputBorder(
+                            // 평상시의 textField외곽선에 대한 선 지정
+                            borderSide: BorderSide(
+                              color: Color.fromRGBO(
+                                  233, 233, 233, 1), // 활성화된 상태의 테두리 색상
+                              width: 1.0, // 활성화된 상태의 테두리 두께
+                            ),
+                            borderRadius: BorderRadius.circular(
+                                12.0), // 활성화된 상태의 테두리 모서리 반경
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            // 텍스트 필드에 포커싱이 잡혀있을때(커서가 잡혀있을때)
+                            borderSide: BorderSide(
+                                color: const Color.fromRGBO(233, 233, 233, 1),
+                                width: 1.0),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          hintText: '검색',
+                          hintStyle: TextStyle(
+                              fontSize: 12.0,
+                              color: Color.fromRGBO(233, 233, 233, 1)),
                           // 힌트 텍스트의 글자 크기
                           filled: true,
-                          fillColor: Color.fromRGBO(243, 246, 255, 1),
+                          fillColor: Colors.white,
                           contentPadding: EdgeInsets.symmetric(
                               vertical: 4.0, horizontal: 8.0), // 패딩
                           // TextField의 오른쪽에 IconButton을 위한 공간 확보
@@ -690,11 +723,14 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                         style: TextStyle(fontSize: 12.0),
                       ),
                       Container(
+                        // 검색창 버튼
                         margin: EdgeInsets.only(
                             left: 0.0), // TextField와 버튼 사이의 간격 조정
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10.0),
-                          color: Colors.blue,
+                          borderRadius: BorderRadius.horizontal(
+                              left: Radius.circular(0),
+                              right: Radius.circular(12)), // 라운드를 오른쪽만 주게됨
+                          color: Color.fromRGBO(115, 140, 243, 1),
                           border: Border.all(
                             color: Colors.white,
                             //width: 4.0,
@@ -703,12 +739,12 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                         child: IconButton(
                           icon: Icon(Icons.search, color: Colors.white),
                           onPressed: () {
-                            // 동의서 명 검색
-                            // 전체검색일때
-                            if (consentSearchType.toString() == '1') {
-                              _searchWordController.updateSearchWord(
-                                  _textFieldEditingController.text);
-                            } else if (consentSearchType.toString() == '3') {}
+                            _searchWordController.updateSearchWord(
+                                _textFieldEditingController.text);
+                            print('동의서 검색 클릭!');
+                            setState(() {
+                              //검색값 가지고 재빌드함
+                            });
                           },
                         ),
                       ),
@@ -910,15 +946,19 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
                                           Expanded(
                                             child: Row(
                                               children: [
-                                                Text(
-                                                  data[index]['FormName'],
-                                                  style: const TextStyle(
-                                                      fontSize: 12),
+                                                Expanded(
+                                                  child: Container(
+                                                    child: Text(
+                                                      data[index]['FormName'],
+                                                      style: const TextStyle(
+                                                        fontSize: 12,
+                                                      ),
+                                                    ),
+                                                  ),
                                                 ),
-                                                Spacer(),
                                                 IconButton(
                                                     padding: EdgeInsets.only(
-                                                        right: 30),
+                                                        right: 10),
                                                     onPressed: () {
                                                       // print("@@아이콘 버튼 클릭");
                                                     },
@@ -1005,13 +1045,14 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
     return bookmarkList;
   }
 
-  Widget consentSearchTypeWidget(int groupValue, Function(int) onChanged) {
+  Widget consentSearchTypeWidget(
+      bool isVerticalMode, int groupValue, Function(int) onChanged) {
     return Row(
       children: <Widget>[
         InkWell(
           onTap: () => onChanged(1),
           child: Padding(
-            padding: EdgeInsets.all(10),
+            padding: isVerticalMode ? EdgeInsets.all(5) : EdgeInsets.all(10),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
@@ -1039,7 +1080,7 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
         InkWell(
           onTap: () => onChanged(2),
           child: Padding(
-            padding: EdgeInsets.all(5),
+            padding: isVerticalMode ? EdgeInsets.all(3) : EdgeInsets.all(5),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
@@ -1065,7 +1106,7 @@ class _AllConsentWidgetState extends State<AllConsentWidget> {
         InkWell(
           onTap: () => onChanged(3),
           child: Padding(
-            padding: EdgeInsets.all(5),
+            padding: isVerticalMode ? EdgeInsets.all(3) : EdgeInsets.all(5),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[

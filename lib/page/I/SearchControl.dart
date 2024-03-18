@@ -50,7 +50,7 @@ class _PatientIWidgetState extends State<PatientIWidget> {
 
   // 배터리 절전권한 관련 java 플랫폼
   static const platform = MethodChannel('com.example.consent5/kmiPlugin');
-  
+
   // 상태관리 컨트롤러 최상위 위젯에서 초기화
   final VisibleController _visibleController = Get.find();
 
@@ -83,6 +83,13 @@ class _PatientIWidgetState extends State<PatientIWidget> {
       dateText = '검사일';
       alertText = '검사명';
     }
+
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
 
     // 2024/1/5 by sangU02
     return OrientationBuilder(builder: (context, orientation) {
@@ -153,20 +160,22 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                                       .patientDetail['params']!,
                                 },
                               )),
+                          isVerticalMode
+                              ? Obx(() => AllConsentWidget(
+                                    isVerticalMode: isVerticalMode,
+                                    isVisible:
+                                        _visibleController.isVisible.value,
+                                    searchWordController: _searchWordController,
+                                    patientDetailController:
+                                        _patientDetailController,
+                                  ))
+                              : Container()
                         ],
                       ),
                       // consentWidgetLandScape(isVerticalMode: isVerticalMode)
                     ],
                   ),
                 ),
-                isVerticalMode
-                    ? Obx(() => AllConsentWidget(
-                          isVerticalMode: isVerticalMode,
-                          isVisible: _visibleController.isVisible.value,
-                          searchWordController: _searchWordController,
-                          patientDetailController: _patientDetailController,
-                        ))
-                    : Container()
               ],
             ),
             isVerticalMode
@@ -184,13 +193,13 @@ class _PatientIWidgetState extends State<PatientIWidget> {
   }
 
   Future<void> requestPermissions() async {
-    try{
-      final result = await platform.invokeMethod('requestIgnoreBatteryOptimization');
+    try {
+      final result =
+          await platform.invokeMethod('requestIgnoreBatteryOptimization');
       print('배터리 절전권한 $result');
-    } on PlatformException catch (e){
+    } on PlatformException catch (e) {
       print('망해버렸어~');
     }
-
   }
 
   @override
@@ -399,7 +408,8 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                     dateController.text,
                     wardValue,
                     deptValue,
-                    docValue,);
+                    docValue,
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromRGBO(255, 255, 255, 1),
@@ -423,7 +433,9 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                     SizedBox(width: 4), // 아이콘과 텍스트 사이의 공간 조정
                     Text(
                       '검색',
-                      style: TextStyle(fontSize: 12, color: Color.fromRGBO(115, 140, 243, 1)),
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: Color.fromRGBO(115, 140, 243, 1)),
                     ),
                   ],
                 ),
@@ -434,9 +446,7 @@ class _PatientIWidgetState extends State<PatientIWidget> {
               ElevatedButton(
                 onPressed: () {
                   // 버튼 클릭 시 실행할 작업
-                  setState(() {
-
-                  });
+                  setState(() {});
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromRGBO(255, 255, 255, 1),
@@ -460,7 +470,9 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                     SizedBox(width: 4), // 아이콘과 텍스트 사이의 공간 조정
                     Text(
                       '초기화',
-                      style: TextStyle(fontSize: 12, color: Color.fromRGBO(115, 140, 243, 1)),
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: Color.fromRGBO(115, 140, 243, 1)),
                     ),
                   ],
                 ),
@@ -591,7 +603,8 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                     dateController.text,
                     wardValue,
                     deptValue,
-                    docValue,);
+                    docValue,
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromRGBO(255, 255, 255, 1),
@@ -615,7 +628,9 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                     SizedBox(width: 4), // 아이콘과 텍스트 사이의 공간 조정
                     Text(
                       '검색',
-                      style: TextStyle(fontSize: 12, color: Color.fromRGBO(115, 140, 243, 1)),
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: Color.fromRGBO(115, 140, 243, 1)),
                     ),
                   ],
                 ),
@@ -626,9 +641,7 @@ class _PatientIWidgetState extends State<PatientIWidget> {
               ElevatedButton(
                 onPressed: () {
                   // 버튼 클릭 시 실행할 작업
-                  setState(() {
-
-                  });
+                  setState(() {});
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromRGBO(255, 255, 255, 1),
@@ -652,7 +665,9 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                     SizedBox(width: 4), // 아이콘과 텍스트 사이의 공간 조정
                     Text(
                       '초기화',
-                      style: TextStyle(fontSize: 12, color: Color.fromRGBO(115, 140, 243, 1)),
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: Color.fromRGBO(115, 140, 243, 1)),
                     ),
                   ],
                 ),
@@ -716,7 +731,8 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                     dateController.text,
                     wardValue,
                     deptValue,
-                    docValue,);
+                    docValue,
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromRGBO(255, 255, 255, 1),
@@ -740,7 +756,9 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                     SizedBox(width: 4), // 아이콘과 텍스트 사이의 공간 조정
                     Text(
                       '검색',
-                      style: TextStyle(fontSize: 12, color: Color.fromRGBO(115, 140, 243, 1)),
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: Color.fromRGBO(115, 140, 243, 1)),
                     ),
                   ],
                 ),
@@ -751,9 +769,7 @@ class _PatientIWidgetState extends State<PatientIWidget> {
               ElevatedButton(
                 onPressed: () {
                   // 버튼 클릭 시 실행할 작업
-                  setState(() {
-
-                  });
+                  setState(() {});
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromRGBO(255, 255, 255, 1),
@@ -777,7 +793,9 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                     SizedBox(width: 4), // 아이콘과 텍스트 사이의 공간 조정
                     Text(
                       '초기화',
-                      style: TextStyle(fontSize: 12, color: Color.fromRGBO(115, 140, 243, 1)),
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: Color.fromRGBO(115, 140, 243, 1)),
                     ),
                   ],
                 ),
@@ -842,7 +860,8 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                     dateController.text,
                     wardValue,
                     deptValue,
-                    docValue,);
+                    docValue,
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromRGBO(255, 255, 255, 1),
@@ -866,7 +885,9 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                     SizedBox(width: 4), // 아이콘과 텍스트 사이의 공간 조정
                     Text(
                       '검색',
-                      style: TextStyle(fontSize: 12, color: Color.fromRGBO(115, 140, 243, 1)),
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: Color.fromRGBO(115, 140, 243, 1)),
                     ),
                   ],
                 ),
@@ -877,9 +898,7 @@ class _PatientIWidgetState extends State<PatientIWidget> {
               ElevatedButton(
                 onPressed: () {
                   // 버튼 클릭 시 실행할 작업
-                  setState(() {
-
-                  });
+                  setState(() {});
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromRGBO(255, 255, 255, 1),
@@ -903,7 +922,9 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                     SizedBox(width: 4), // 아이콘과 텍스트 사이의 공간 조정
                     Text(
                       '초기화',
-                      style: TextStyle(fontSize: 12, color: Color.fromRGBO(115, 140, 243, 1)),
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: Color.fromRGBO(115, 140, 243, 1)),
                     ),
                   ],
                 ),
@@ -966,7 +987,8 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                     dateController.text,
                     wardValue,
                     deptValue,
-                    docValue,);
+                    docValue,
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromRGBO(255, 255, 255, 1),
@@ -990,7 +1012,9 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                     SizedBox(width: 4), // 아이콘과 텍스트 사이의 공간 조정
                     Text(
                       '검색',
-                      style: TextStyle(fontSize: 12, color: Color.fromRGBO(115, 140, 243, 1)),
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: Color.fromRGBO(115, 140, 243, 1)),
                     ),
                   ],
                 ),
@@ -1001,9 +1025,7 @@ class _PatientIWidgetState extends State<PatientIWidget> {
               ElevatedButton(
                 onPressed: () {
                   // 버튼 클릭 시 실행할 작업
-                  setState(() {
-
-                  });
+                  setState(() {});
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromRGBO(255, 255, 255, 1),
@@ -1027,7 +1049,9 @@ class _PatientIWidgetState extends State<PatientIWidget> {
                     SizedBox(width: 4), // 아이콘과 텍스트 사이의 공간 조정
                     Text(
                       '초기화',
-                      style: TextStyle(fontSize: 12, color: Color.fromRGBO(115, 140, 243, 1)),
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: Color.fromRGBO(115, 140, 243, 1)),
                     ),
                   ],
                 ),

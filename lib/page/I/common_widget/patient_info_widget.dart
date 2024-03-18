@@ -347,7 +347,7 @@ class _PatientInfoWidgetState extends State<PatientInfoWidget> {
                             ),
                             style: TextStyle(
                                 fontSize: 10, // 입력 텍스트의 글자 크기 조정
-                                color: Color.fromRGBO(233, 233, 233, 1)),
+                                color: Colors.black87),
                           ),
                         ),
                       );

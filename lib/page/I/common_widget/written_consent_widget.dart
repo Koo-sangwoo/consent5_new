@@ -71,208 +71,455 @@ class _WriteConsentWidgetState extends State<WriteConsentWidget>
     Map<dynamic, dynamic> patientInfo = detail['detail'];
     const platform = MethodChannel('com.example.consent5/kmiPlugin');
 
-    return Expanded(
-      child: Container(
-        // padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
-        alignment: Alignment.centerLeft,
-        height: 250,
-        width: widget.isVerticalMode ? 375 : 380,
-        margin: widget.isVerticalMode
-            ? const EdgeInsets.fromLTRB(5, 5, 10, 5)
-            : const EdgeInsets.fromLTRB(5, 5, 5, 10),
-        // 기존 right margin = 5;
-        // color: Colors.blue,
-        decoration: BoxDecoration(
-            // color: Colors.blue, // 컨테이너의 배경색
-            borderRadius: BorderRadius.circular(20.0),
-            // 테두리의 둥근 정도
-            color: Colors.white,
-            boxShadow: const [
-              BoxShadow(
-                color: Color.fromRGBO(0, 0, 0, 0.05),
-                spreadRadius: 3,
-                blurRadius: 30,
-              )
-            ]),
+    return !widget.isVerticalMode
+        ? Expanded(
+            child: Container(
+              // padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+              alignment: Alignment.centerLeft,
+              height: 250,
+              width: widget.isVerticalMode ? 375 : 380,
+              margin: widget.isVerticalMode
+                  ? const EdgeInsets.fromLTRB(5, 5, 10, 5)
+                  : const EdgeInsets.fromLTRB(5, 5, 5, 10),
+              // 기존 right margin = 5;
+              // color: Colors.blue,
+              decoration: BoxDecoration(
+                  // color: Colors.blue, // 컨테이너의 배경색
+                  borderRadius: BorderRadius.circular(20.0),
+                  // 테두리의 둥근 정도
+                  color: Colors.white,
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color.fromRGBO(0, 0, 0, 0.05),
+                      spreadRadius: 3,
+                      blurRadius: 30,
+                    )
+                  ]),
 
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Container(
-              padding: EdgeInsets.fromLTRB(20, 20, 20, 5),
-              child: const Text(
-                "작성동의서",
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 17),
-              )),
-          const Divider(
-              thickness: 0.5,
-              height: 20,
-              color: Color.fromRGBO(233, 233, 233, 1)),
-          Expanded(
-              child: widget.isVisible
-                  ? FutureBuilder(
-                      future: getConsents(patientInfo['PatientCode']),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        } else if (snapshot.connectionState ==
-                                ConnectionState.done &&
-                            snapshot.hasData) {
-                          var data = snapshot.data as List<dynamic>;
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                        padding: EdgeInsets.fromLTRB(20, 20, 20, 5),
+                        child: const Text(
+                          "작성동의서",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600, fontSize: 17),
+                        )),
+                    const Divider(
+                        thickness: 0.5,
+                        height: 20,
+                        color: Color.fromRGBO(233, 233, 233, 1)),
+                    Expanded(
+                        child: widget.isVisible
+                            ? FutureBuilder(
+                                future: getConsents(patientInfo['PatientCode']),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const Center(
+                                        child: CircularProgressIndicator());
+                                  } else if (snapshot.connectionState ==
+                                          ConnectionState.done &&
+                                      snapshot.hasData) {
+                                    var data = snapshot.data as List<dynamic>;
 
-                          checkboxValuesNotifier.value =
-                              List.generate(data.length, (index) => false);
-                          selectedData.clear(); //
+                                    checkboxValuesNotifier.value =
+                                        List.generate(
+                                            data.length, (index) => false);
+                                    selectedData.clear(); //
 
-                          if (checkboxValuesNotifier.value.isEmpty) {
-                            checkboxValuesNotifier.value =
-                                List.generate(data.length, (index) => false);
-                          }
-                          if (data.isNotEmpty) {
-                            return ListView.separated(
-                              itemCount: data.length,
-                              itemBuilder: (context, index) {
-                                return ValueListenableBuilder<List<bool>>(
-                                  valueListenable: checkboxValuesNotifier,
-                                  builder: (context, values, child) {
-                                    return InkWell(
-                                      onTap: () {
-                                        // print(
-                                        //     '선택한 동의서 Rid : ${data[index]['ConsentMstRid']} / 선택한 동의서 저장타입 : ${data[index]['ConsentState']}');
-                                        print(data[index].toString());
-                                        String consentType = 'temp';
-                                        String korConsentType = '';
-                                        // String formNames = data[index]['FormName'];
+                                    if (checkboxValuesNotifier.value.isEmpty) {
+                                      checkboxValuesNotifier.value =
+                                          List.generate(
+                                              data.length, (index) => false);
+                                    }
+                                    if (data.isNotEmpty) {
+                                      return ListView.separated(
+                                        itemCount: data.length,
+                                        itemBuilder: (context, index) {
+                                          return ValueListenableBuilder<
+                                              List<bool>>(
+                                            valueListenable:
+                                                checkboxValuesNotifier,
+                                            builder: (context, values, child) {
+                                              return InkWell(
+                                                onTap: () {
+                                                  // print(
+                                                  //     '선택한 동의서 Rid : ${data[index]['ConsentMstRid']} / 선택한 동의서 저장타입 : ${data[index]['ConsentState']}');
+                                                  print(data[index].toString());
+                                                  String consentType = 'temp';
+                                                  String korConsentType = '';
+                                                  // String formNames = data[index]['FormName'];
 
-                                        List<Map<String, String>> saveConsent =
-                                            [
-                                          {
-                                            'ConsentMstRid': data[index]
-                                                    ['ConsentMstRid']
-                                                .toString(),
-                                            'FormCd': data[index]['FormCd']
-                                                .toString(),
-                                            'FormId': data[index]['FormId']
-                                                .toString(),
-                                            'FormVersion': data[index]
-                                                    ['FormVersion']
-                                                .toString(),
-                                            'FormRid': data[index]['FormRid']
-                                                .toString(),
-                                            'FormGuid': data[index]['FormGuid']
-                                                .toString(),
-                                          }
-                                        ];
-                                        // 환자 상세정보
-                                        Map<dynamic, dynamic> params = detail;
+                                                  List<Map<String, String>>
+                                                      saveConsent = [
+                                                    {
+                                                      'ConsentMstRid': data[
+                                                                  index]
+                                                              ['ConsentMstRid']
+                                                          .toString(),
+                                                      'FormCd': data[index]
+                                                              ['FormCd']
+                                                          .toString(),
+                                                      'FormId': data[index]
+                                                              ['FormId']
+                                                          .toString(),
+                                                      'FormVersion': data[index]
+                                                              ['FormVersion']
+                                                          .toString(),
+                                                      'FormRid': data[index]
+                                                              ['FormRid']
+                                                          .toString(),
+                                                      'FormGuid': data[index]
+                                                              ['FormGuid']
+                                                          .toString(),
+                                                    }
+                                                  ];
+                                                  // 환자 상세정보
+                                                  Map<dynamic, dynamic> params =
+                                                      detail;
 
-                                        if (data[index]['ConsentState'] ==
-                                            'ELECTR_CMP') {
-                                          consentType = 'end';
-                                        }
+                                                  if (data[index]
+                                                          ['ConsentState'] ==
+                                                      'ELECTR_CMP') {
+                                                    consentType = 'end';
+                                                  }
 
-                                        if (consentType == 'temp') {
-                                          korConsentType = '임시저장';
-                                        } else {
-                                          korConsentType = '인증저장';
-                                        }
+                                                  if (consentType == 'temp') {
+                                                    korConsentType = '임시저장';
+                                                  } else {
+                                                    korConsentType = '인증저장';
+                                                  }
 
-                                        showDialog(
-                                            context: context,
-                                            barrierDismissible: true,
-                                            builder: (BuildContext context) {
-                                              return AlertDialog(
-                                                content: Text(
-                                                    '${data[index]['ConsentName']} 서식을 열겠습니까?'),
-                                                actions: [
-                                                  ElevatedButton(
-                                                      onPressed: () {
-                                                        Navigator.of(context)
-                                                            .pop();
-                                                        platform.invokeMethod(
-                                                            'openEForm', {
-                                                          'type': consentType,
-                                                          'consents':
-                                                              jsonEncode(
-                                                                  saveConsent),
-                                                          'params': jsonEncode(
-                                                              params),
-                                                          // 'op': 'someOperation',
-                                                        });
-                                                      },
-                                                      child: Text('확인')),
-                                                  ElevatedButton(
-                                                      onPressed: () {
-                                                        Navigator.of(context)
-                                                            .pop();
-                                                      },
-                                                      child: Text('취소'))
-                                                ],
+                                                  showDialog(
+                                                      context: context,
+                                                      barrierDismissible: true,
+                                                      builder: (BuildContext
+                                                          context) {
+                                                        return AlertDialog(
+                                                          content: Text(
+                                                              '${data[index]['ConsentName']} 서식을 열겠습니까?'),
+                                                          actions: [
+                                                            ElevatedButton(
+                                                                onPressed: () {
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop();
+                                                                  platform.invokeMethod(
+                                                                      'openEForm',
+                                                                      {
+                                                                        'type':
+                                                                            consentType,
+                                                                        'consents':
+                                                                            jsonEncode(saveConsent),
+                                                                        'params':
+                                                                            jsonEncode(params),
+                                                                        // 'op': 'someOperation',
+                                                                      });
+                                                                },
+                                                                child:
+                                                                    Text('확인')),
+                                                            ElevatedButton(
+                                                                onPressed: () {
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop();
+                                                                },
+                                                                child:
+                                                                    Text('취소'))
+                                                          ],
+                                                        );
+                                                      });
+                                                },
+                                                child: Row(
+                                                  children: <Widget>[
+                                                    Container(
+                                                      margin: const EdgeInsets
+                                                          .fromLTRB(
+                                                          20, 0, 5, 0),
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 12,
+                                                          vertical:
+                                                              4), // 가로 세로 패딩 조절
+                                                      decoration: BoxDecoration(
+                                                        color: getContainerColor(
+                                                            data[index][
+                                                                'ConsentStateDisp']), // 배경색
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                                15), // 모서리 둥글기
+                                                      ),
+                                                      child: Text(
+                                                        data[index][
+                                                            'ConsentStateDisp'],
+                                                        style: TextStyle(
+                                                          fontSize: 12,
+                                                          color: getConsentTextColor(
+                                                              data[index][
+                                                                  'ConsentStateDisp']),
+                                                          fontWeight: FontWeight
+                                                              .bold, // 글자 두께를 더 두껍게 설정
+                                                        ),
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                      ),
+                                                    ),
+                                                    Expanded(
+                                                      child: Text(
+                                                        '[${data[index]['ModifyDateTime'].toString().substring(0, 10)}] ' +
+                                                            data[index]
+                                                                ['ConsentName'],
+                                                        style: const TextStyle(
+                                                            fontSize: 13),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
                                               );
-                                            });
-                                      },
-                                      child: Row(
-                                        children: <Widget>[
-                                          Container(
-                                            margin: const EdgeInsets.fromLTRB(
-                                                20, 0, 5, 0),
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 12,
-                                                vertical: 4), // 가로 세로 패딩 조절
-                                            decoration: BoxDecoration(
-                                              color: getContainerColor(data[
-                                                      index]
-                                                  ['ConsentStateDisp']), // 배경색
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                      15), // 모서리 둥글기
-                                            ),
-                                            child: Text(
-                                              data[index]['ConsentStateDisp'],
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: getConsentTextColor(
-                                                    data[index]
-                                                        ['ConsentStateDisp']),
-                                                fontWeight: FontWeight
-                                                    .bold, // 글자 두께를 더 두껍게 설정
+                                            },
+                                          );
+                                        },
+                                        separatorBuilder: (context, index) =>
+                                            const Divider(
+                                          color:
+                                              Color.fromRGBO(233, 233, 233, 1),
+                                          thickness: 0.5, // 두께를 1로 설정
+                                          height: 30, // 높이를 줄임
+                                        ),
+                                      );
+                                    } else {
+                                      return Center(
+                                          child: const Text("조회된 자료가 없습니다."));
+                                    }
+                                  } else {
+                                    return Center(
+                                        child: const Text("조회된 자료가 없습니다."));
+                                  }
+                                },
+                              )
+                            : Container()),
+                  ]),
+            ),
+          )
+        : Container(
+            // padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+            alignment: Alignment.centerLeft,
+            height: 250,
+            width: widget.isVerticalMode ? 375 : 380,
+            margin: widget.isVerticalMode
+                ? const EdgeInsets.fromLTRB(5, 5, 10, 5)
+                : const EdgeInsets.fromLTRB(5, 5, 5, 10),
+            // 기존 right margin = 5;
+            // color: Colors.blue,
+            decoration: BoxDecoration(
+                // color: Colors.blue, // 컨테이너의 배경색
+                borderRadius: BorderRadius.circular(20.0),
+                // 테두리의 둥근 정도
+                color: Colors.white,
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color.fromRGBO(0, 0, 0, 0.05),
+                    spreadRadius: 3,
+                    blurRadius: 30,
+                  )
+                ]),
+
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Container(
+                  padding: EdgeInsets.fromLTRB(20, 20, 20, 5),
+                  child: const Text(
+                    "작성동의서",
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 17),
+                  )),
+              const Divider(
+                  thickness: 0.5,
+                  height: 20,
+                  color: Color.fromRGBO(233, 233, 233, 1)),
+              Expanded(
+                  child: widget.isVisible
+                      ? FutureBuilder(
+                          future: getConsents(patientInfo['PatientCode']),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            } else if (snapshot.connectionState ==
+                                    ConnectionState.done &&
+                                snapshot.hasData) {
+                              var data = snapshot.data as List<dynamic>;
+
+                              checkboxValuesNotifier.value =
+                                  List.generate(data.length, (index) => false);
+                              selectedData.clear(); //
+
+                              if (checkboxValuesNotifier.value.isEmpty) {
+                                checkboxValuesNotifier.value = List.generate(
+                                    data.length, (index) => false);
+                              }
+                              if (data.isNotEmpty) {
+                                return ListView.separated(
+                                  itemCount: data.length,
+                                  itemBuilder: (context, index) {
+                                    return ValueListenableBuilder<List<bool>>(
+                                      valueListenable: checkboxValuesNotifier,
+                                      builder: (context, values, child) {
+                                        return InkWell(
+                                          onTap: () {
+                                            // print(
+                                            //     '선택한 동의서 Rid : ${data[index]['ConsentMstRid']} / 선택한 동의서 저장타입 : ${data[index]['ConsentState']}');
+                                            print(data[index].toString());
+                                            String consentType = 'temp';
+                                            String korConsentType = '';
+                                            // String formNames = data[index]['FormName'];
+
+                                            List<Map<String, String>>
+                                                saveConsent = [
+                                              {
+                                                'ConsentMstRid': data[index]
+                                                        ['ConsentMstRid']
+                                                    .toString(),
+                                                'FormCd': data[index]['FormCd']
+                                                    .toString(),
+                                                'FormId': data[index]['FormId']
+                                                    .toString(),
+                                                'FormVersion': data[index]
+                                                        ['FormVersion']
+                                                    .toString(),
+                                                'FormRid': data[index]
+                                                        ['FormRid']
+                                                    .toString(),
+                                                'FormGuid': data[index]
+                                                        ['FormGuid']
+                                                    .toString(),
+                                              }
+                                            ];
+                                            // 환자 상세정보
+                                            Map<dynamic, dynamic> params =
+                                                detail;
+
+                                            if (data[index]['ConsentState'] ==
+                                                'ELECTR_CMP') {
+                                              consentType = 'end';
+                                            }
+
+                                            if (consentType == 'temp') {
+                                              korConsentType = '임시저장';
+                                            } else {
+                                              korConsentType = '인증저장';
+                                            }
+
+                                            showDialog(
+                                                context: context,
+                                                barrierDismissible: true,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return AlertDialog(
+                                                    content: Text(
+                                                        '${data[index]['ConsentName']} 서식을 열겠습니까?'),
+                                                    actions: [
+                                                      ElevatedButton(
+                                                          onPressed: () {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop();
+                                                            platform
+                                                                .invokeMethod(
+                                                                    'openEForm',
+                                                                    {
+                                                                  'type':
+                                                                      consentType,
+                                                                  'consents':
+                                                                      jsonEncode(
+                                                                          saveConsent),
+                                                                  'params':
+                                                                      jsonEncode(
+                                                                          params),
+                                                                  // 'op': 'someOperation',
+                                                                });
+                                                          },
+                                                          child: Text('확인')),
+                                                      ElevatedButton(
+                                                          onPressed: () {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop();
+                                                          },
+                                                          child: Text('취소'))
+                                                    ],
+                                                  );
+                                                });
+                                          },
+                                          child: Row(
+                                            children: <Widget>[
+                                              Container(
+                                                margin:
+                                                    const EdgeInsets.fromLTRB(
+                                                        20, 0, 5, 0),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 12,
+                                                        vertical:
+                                                            4), // 가로 세로 패딩 조절
+                                                decoration: BoxDecoration(
+                                                  color: getContainerColor(data[
+                                                          index][
+                                                      'ConsentStateDisp']), // 배경색
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          15), // 모서리 둥글기
+                                                ),
+                                                child: Text(
+                                                  data[index]
+                                                      ['ConsentStateDisp'],
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: getConsentTextColor(
+                                                        data[index][
+                                                            'ConsentStateDisp']),
+                                                    fontWeight: FontWeight
+                                                        .bold, // 글자 두께를 더 두껍게 설정
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                ),
                                               ),
-                                              textAlign: TextAlign.center,
-                                            ),
+                                              Expanded(
+                                                child: Text(
+                                                  '[${data[index]['ModifyDateTime'].toString().substring(0, 10)}] ' +
+                                                      data[index]
+                                                          ['ConsentName'],
+                                                  style: const TextStyle(
+                                                      fontSize: 13),
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                          Expanded(
-                                            child: Text(
-                                              '[${data[index]['ModifyDateTime'].toString().substring(0, 10)}] ' +
-                                                  data[index]['ConsentName'],
-                                              style:
-                                                  const TextStyle(fontSize: 13),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                        );
+                                      },
                                     );
                                   },
+                                  separatorBuilder: (context, index) =>
+                                      const Divider(
+                                    color: Color.fromRGBO(233, 233, 233, 1),
+                                    thickness: 0.5, // 두께를 1로 설정
+                                    height: 30, // 높이를 줄임
+                                  ),
                                 );
-                              },
-                              separatorBuilder: (context, index) =>
-                                  const Divider(
-                                color: Color.fromRGBO(233, 233, 233, 1),
-                                thickness: 0.5, // 두께를 1로 설정
-                                height: 30, // 높이를 줄임
-                              ),
-                            );
-                          } else {
-                            return Center(child: const Text("조회된 자료가 없습니다."));
-                          }
-                        } else {
-                          return Center(child: const Text("조회된 자료가 없습니다."));
-                        }
-                      },
-                    )
-                  : Container()),
-        ]),
-      ),
-    );
+                              } else {
+                                return Center(
+                                    child: const Text("조회된 자료가 없습니다."));
+                              }
+                            } else {
+                              return Center(child: const Text("조회된 자료가 없습니다."));
+                            }
+                          },
+                        )
+                      : Container()),
+            ]),
+          );
   }
 
   Color getContainerColor(String consentStateDisp) {
