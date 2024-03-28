@@ -175,7 +175,39 @@ class _MainPageState extends State<MainPage>
                       IconButton(
                           onPressed: () {
                             print("@@아이콘 버튼 클릭");
-                            Get.back();
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('로그아웃'),
+                                  content: Text('로그아웃을 하시겠습니까?'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () {
+                                        _patientDetailController
+                                            .updatePatientInfo(
+                                                patientInfo: {},
+                                                userInfo: {}); // 유저 및 환자정보 초기화
+                                        Navigator.of(context)
+                                            .pop(false); // 취소 버튼, 아무 동작 없음
+                                      },
+                                      child: Text('취소'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        _patientDetailController
+                                            .updatePatientInfo(
+                                                patientInfo: {}, userInfo: {});
+                                        Navigator.of(context)
+                                            .pop(true); // 확인 버튼, 앱 종료
+                                        Get.back();
+                                      },
+                                      child: Text('확인'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
                           },
                           icon: const Icon(
                             Icons.logout_rounded,

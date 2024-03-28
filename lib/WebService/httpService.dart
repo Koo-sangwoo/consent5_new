@@ -256,7 +256,7 @@ Future<List<dynamic>> makeRequest_emerPatient(
     Map<String, dynamic>? param}) async {
   url = 'http://59.11.2.207:50089/HospitalSvc.aspx';
 
-  methodName = "GetEmergencypatientSearch";
+  methodName = "GetEmergencyPatientSearch";
 
   Map date = {
     "UserID": userId // 사용자 ID

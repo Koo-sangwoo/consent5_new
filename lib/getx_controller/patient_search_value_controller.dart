@@ -1,7 +1,6 @@
 import 'package:consent5/WebService/httpService.dart';
 import 'package:get/get.dart';
 
-
 /**
  * @author sangU02 <br/>
  * @since 2024/02/26 <br/>
@@ -33,7 +32,8 @@ class PatientSearchValueController extends GetxController {
    * @apinote 입원환자 정보 요청 메소드
    */
   Future<List<dynamic>> getInPatientInfo() async {
-    String dateParam = this.date.value.isNotEmpty ? date.toString().replaceAll('-', '') : '';
+    String dateParam =
+        this.date.value.isNotEmpty ? date.toString().replaceAll('-', '') : '';
     String wardParam = this.ward.value.isNotEmpty ? ward.toString() : '';
     String doctorParam = this.doctor.value.isNotEmpty ? doctor.toString() : '';
     String deptParam = this.dept.value.isNotEmpty ? dept.toString() : '';
@@ -47,6 +47,62 @@ class PatientSearchValueController extends GetxController {
       userPw: '1234',
       clnDate: dateParam,
       ward: wardParam,
+      docName: doctorParam,
+      dept: deptParam,
+      url: 'http://59.11.2.207:50089/HospitalSvc.aspx',
+    );
+    List<dynamic> printReq = await makeRequest2;
+    return printReq;
+  }
+
+  /**
+   * @author sangU02 <br/>
+   * @since 2024/1/5 <br/>
+   * @apinote 외래환자 정보 요청 메소드
+   */
+  Future<List<dynamic>> getOutPatientInfo() async {
+    String dateParam =
+        this.date.value.isNotEmpty ? date.toString().replaceAll('-', '') : '';
+    String wardParam = this.ward.value.isNotEmpty ? ward.toString() : '';
+    String doctorParam = this.doctor.value.isNotEmpty ? doctor.toString() : '';
+    String deptParam = this.dept.value.isNotEmpty ? dept.toString() : '';
+
+    print(
+        'getInpatientInfo value = $dateParam / $wardParam / $doctorParam / $deptParam');
+
+    Future<List<dynamic>> makeRequest2 = makeRequest_outPatient(
+      methodName: 'GetOutpatientSearch',
+      userId: '01',
+      userPw: '1234',
+      clnDate: dateParam,
+      docName: doctorParam,
+      dept: deptParam,
+      url: 'http://59.11.2.207:50089/HospitalSvc.aspx',
+    );
+    List<dynamic> printReq = await makeRequest2;
+    return printReq;
+  }
+
+  /**
+   * @author sangU02 <br/>
+   * @since 2024/1/5 <br/>
+   * @apinote 응급환자 정보 요청 메소드
+   */
+  Future<List<dynamic>> getEmerPatientInfo() async {
+    String dateParam =
+        this.date.value.isNotEmpty ? date.toString().replaceAll('-', '') : '';
+    String wardParam = this.ward.value.isNotEmpty ? ward.toString() : '';
+    String doctorParam = this.doctor.value.isNotEmpty ? doctor.toString() : '';
+    String deptParam = this.dept.value.isNotEmpty ? dept.toString() : '';
+
+    print(
+        'getInpatientInfo value = $dateParam / $wardParam / $doctorParam / $deptParam');
+
+    Future<List<dynamic>> makeRequest2 = makeRequest_emerPatient(
+      methodName: 'GetEmerPatientSearch',
+      userId: '01',
+      userPw: '1234',
+      clnDate: dateParam,
       docName: doctorParam,
       dept: deptParam,
       url: 'http://59.11.2.207:50089/HospitalSvc.aspx',
